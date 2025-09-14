@@ -1,0 +1,82 @@
+/* 全体を中央寄せ */
+body {
+  background-color: #003018;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* 横方向中央 */
+  justify-content: center;  /* 縦方向中央にしたい場合 */
+  min-height: 100vh;        /* 画面全体の高さ */
+  padding: 20px;
+}
+
+/* 画像 */
+body img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* 入力フォーム */
+.mb-3 {
+  width: 70%;
+  max-width: 1000px;
+  margin-bottom: 15px;
+}
+
+/* ボタン共通 */
+.btn {
+  display: block;
+  width: 70%;
+  max-width: 400px;
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 7px;
+  transition: 0.3s;
+  text-align: center;
+}
+
+/* ログインボタン */
+.btn-Login {
+  background-color: #0f6b3d; 
+  color: white;
+  margin: 50px auto 20px;
+}
+.btn-Login:hover {
+  background-color: #0c5530;
+  color: #fff;
+}
+
+/* 新規登録ボタン */
+.btn-Create {
+  background-color: #5e9d7e; 
+  color: white;
+  margin: 50px auto 20px;
+}
+.btn-Create:hover {
+  background-color: #416d57;
+  color: #fff;
+}
+
+/* パスワード忘れボタン */
+.btn-Forgot {
+  background-color: #0f6b3d; 
+  color: white;
+}
+.btn-Forgot:hover {
+  background-color: #0c5530;
+  color: #fff;
+}
+
+/* 画像を中央に配置＆サイズ調整 */
+body img {
+  display: block;       /* ブロックにして margin が効くように */
+  margin: 10px auto 20px;  /* 上0、下20px、左右中央 */
+  max-width: 200px;     /* 最大幅 */
+  width: 50%;           /* スマホでは画面幅の50%に調整 */
+  height: auto;         /* 縦横比を維持 */
+}
+
+.form-control {
+  background-color: #adbdb5; /* 暗めの緑系 */
+  border: none;
+}
