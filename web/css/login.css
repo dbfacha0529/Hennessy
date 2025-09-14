@@ -1,0 +1,113 @@
+/* ===== 全体設定 ===== */
+body {
+  background-color: #003018;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* 横中央 */
+  justify-content: center;  /* 縦中央 */
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== フォーム全体 ===== */
+form {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== アラート ===== */
+.alert {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* ===== 入力欄 ===== */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 7px;
+  border: none;
+  background-color: #adbdb5; /* 暗めのグレーグリーン */
+  color: #000;
+  transition: 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 5px #0f6b3d;
+}
+
+/* エラー表示 */
+.is-invalid {
+  border: 2px solid #dc3545; /* Bootstrapの赤 */
+}
+
+/* ===== ボタン共通 ===== */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 7px;
+  text-align: center;
+  transition: 0.3s;
+  font-weight: bold;
+  text-decoration: none; /* aタグの下線消す */
+}
+
+/* ログインボタン */
+.btn-Login {
+  background-color: #0f6b3d;
+  color: white;
+    margin-top: 35px;   /* 上の余白 */
+  margin-bottom: 50px; /* 下の余白 */
+}
+.btn-Login:hover {
+  background-color: #0c5530;
+  color: #fff;
+}
+
+/* 新規登録ボタン */
+.btn-Create {
+  background-color: #5e9d7e;
+  color: white;
+}
+.btn-Create:hover {
+  background-color: #416d57;
+  color: #fff;
+}
+
+/* パスワード忘れボタン */
+.btn-Forgot {
+  background-color: #0f6b3d;
+  color: white;
+}
+.btn-Forgot:hover {
+  background-color: #0c5530;
+  color: #fff;
+}
+
+/* ===== 画像スタイル ===== */
+body img {
+  display: block;
+  margin: 10px auto 20px;
+  max-width: 200px;
+  width: 50%;
+  height: auto;
+}
+
+/* ===== スマホ対応 ===== */
+@media (max-width: 576px) {
+  form {
+    width: 95%;
+  }
+
+  .form-control, .btn {
+    width: 100%;
+  }
+}

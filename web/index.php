@@ -75,7 +75,7 @@ unset($pdo);
   </head>
   <body>
 
-    <!--<img src="../img/Hennessy.jpg">-->
+    <img src="../img/Hennessy.jpg">
     <form method="post">
 
 <!--アラート表示-->
