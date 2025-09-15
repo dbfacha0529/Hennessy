@@ -102,7 +102,7 @@ header('Location: login.php'); // 成功したらログイン画面へ
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <!--オリジナルCSS-->
-  <link href="./css/login.css" rel="stylesheet">
+  <link href="./css/sign_up.css" rel="stylesheet">
 </head>
 
 <body>
@@ -111,7 +111,11 @@ header('Location: login.php'); // 成功したらログイン画面へ
     <?php if (isset($err['common'])): ?>
   <div class="alert alert-danger"><?= $err['common'] ?></div>
 <?php endif; ?>
+<h1>新規登録画面</h1>
+
+
     <!-- ID -->
+     <h2>[1]User_ID:お好きな文字列をご入力ください<br>(英数字6文字以上)</h2>
     <div class="mb-3">
       <input type="text" class="form-control <?php if (isset($err['login_id']))
         echo 'is-invalid'; ?>" id="login_id" name="login_id" value="<?= $login_id ?>" placeholder="ID">
@@ -120,6 +124,7 @@ header('Location: login.php'); // 成功したらログイン画面へ
       <?php endif; ?>
     </div>
     <!-- User_Name -->
+     <h2>[2]User_NAME登録:ニックネームをご入力ください</h2>
     <div class="mb-3">
       <input type="text" class="form-control <?php if (isset($err['user_name']))
         echo 'is-invalid'; ?>" id="user_name" name="user_name" value="<?= $user_name ?>" placeholder="user_name">
@@ -128,6 +133,7 @@ header('Location: login.php'); // 成功したらログイン画面へ
       <?php endif; ?>
     </div>
     <!-- Tel -->
+     <h2>[3]電話番号登録:電話番号をご入力ください<br>  (ハイフンは不要です)<br>  (認証に使用いたしますので<br>携帯電話でのご登録をお願いします)</h2>
     <div class="mb-3">
       <input type="text" class="form-control <?php if (isset($err['tel']))
         echo 'is-invalid'; ?>" id="tel" name="tel" value="<?= $tel ?>" placeholder="tel">
@@ -136,7 +142,8 @@ header('Location: login.php'); // 成功したらログイン画面へ
       <?php endif; ?>
     </div>
     <!-- Pass word -->
-    <div class="mb-3">
+     <h2>[4]Password登録:パスワードをご入力ください</h2>
+    <div class="mb-2">
       <input type="password" class="form-control <?php if (isset($err['password']))
         echo 'is-invalid'; ?>" id="password" name="password" value="<?= $password ?>" placeholder="password">
       <?php if (isset($err['password'])): ?>
@@ -153,9 +160,11 @@ header('Location: login.php'); // 成功したらログイン画面へ
     </div>
     <!-- 登録 -->
     <button type="submit" class="btn btn-Login">登録する</button>
+    <h3>SMS認証に進みます</h3>
     <!-- TOPへ戻る -->
-    <a type="button" class="btn btn-Create" href="sign_up.php">TOPへ戻る</a>
+    <a type="button" class="btn btn-back" href="index.php">TOPへ戻る</a>
   </form>
+  <img src="../img/Hennessy.jpg">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
