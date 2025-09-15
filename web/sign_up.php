@@ -1,3 +1,96 @@
+<?php
+require_once(dirname(__FILE__) . '/../functions.php');
+
+session_start();
+$err = []; // 初期化
+
+$login_id   = '';
+$user_name  = '';
+$tel        = '';
+$password   = '';
+$passwordre = '';
+
+
+
+  // DB接続
+  $pdo = dbConnect(); // 共通関数で接続
+
+    if (isset($_SESSION['cklog'])) {
+    //ログイン済みならHOME画面へ
+    header('Location:home.php');//TODO
+    unset($pdo);
+    exit;
+  }
+
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $login_id = $_POST['login_id'] ?? '';
+    $user_name = $_POST['user_name'] ?? '';
+    $tel = $_POST['tel'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $passwordre = $_POST['passwordre'] ?? '';
+
+    if (!$login_id) {
+      $err['login_id'] = 'IDを入力してください';
+    }
+    
+    if (!$user_name) {
+      $err['user_name'] = 'ニックネームを入力してください';
+    }
+    if (!$tel) {
+      $err['tel'] = 'telを入力してください';
+    } elseif (!preg_match('/^\d{11}$/', $tel)) {
+    $err['tel'] = '電話番号は11桁の数字で入力してください';
+}
+        if (!$password) {
+      $err['password'] = 'パスワードを入力してください';
+    }
+        if (!$passwordre) {
+      $err['passwordre'] = '確認パスワードを入力してください';
+    }
+        if ($password !== $passwordre) {
+        $err['passwordre'] = '確認用パスワードが一致しません';
+      }
+    if (empty($err)) {
+      //重複チェック
+if (empty($err)) {
+    $checkSql = 'SELECT login_id, tel FROM users WHERE login_id = ? OR tel = ? LIMIT 1';
+    $checkStmt = $pdo->prepare($checkSql);
+    $checkStmt->execute([$login_id, $tel]);
+    $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($row) {
+        if ($row['login_id'] === $login_id) {
+            $err['login_id'] = 'このIDはすでに使用されています';
+        }
+        if ($row['tel'] === $tel) {
+            $err['tel'] = 'この番号はすでに使用されています';
+        }
+    }
+}
+    $sql = 'INSERT INTO users (login_id,user_name,tel,password) VALUES (?,?,?,?)';
+if (empty($err)) {
+   // ユーザーデータを配列に入れる 
+    $arr =[];
+    $arr[] = $login_id;
+    $arr[] = $user_name;
+    $arr[] = $tel;
+    $arr[] = password_hash($password,PASSWORD_DEFAULT);
+
+    try{
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute($arr);
+header('Location: login.php'); // 成功したらログイン画面へ
+            exit;
+    
+    
+        } catch(\Exception $e) {
+            $err['common'] = "登録に失敗しました";
+        }
+      }
+    }
+  }
+
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -15,6 +108,9 @@
 <body>
 
   <form method="post">
+    <?php if (isset($err['common'])): ?>
+  <div class="alert alert-danger"><?= $err['common'] ?></div>
+<?php endif; ?>
     <!-- ID -->
     <div class="mb-3">
       <input type="text" class="form-control <?php if (isset($err['login_id']))
@@ -41,7 +137,7 @@
     </div>
     <!-- Pass word -->
     <div class="mb-3">
-      <input type="text" class="form-control <?php if (isset($err['password']))
+      <input type="password" class="form-control <?php if (isset($err['password']))
         echo 'is-invalid'; ?>" id="password" name="password" value="<?= $password ?>" placeholder="password">
       <?php if (isset($err['password'])): ?>
         <div class="invalid-feedback"><?= $err['password'] ?></div>
@@ -49,7 +145,7 @@
     </div>
     <!-- Pass word re -->
     <div class="mb-3">
-      <input type="text" class="form-control <?php if (isset($err['passwordre']))
+      <input type="password" class="form-control <?php if (isset($err['passwordre']))
         echo 'is-invalid'; ?>" id="passwordre" name="passwordre" value="<?= $passwordre ?>" placeholder="passwordre">
       <?php if (isset($err['passwordre'])): ?>
         <div class="invalid-feedback"><?= $err['passwordre'] ?></div>
