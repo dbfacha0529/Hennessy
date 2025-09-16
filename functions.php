@@ -20,3 +20,14 @@ function dbConnect() {
         exit('DB接続エラー: ' . $e->getMessage());
     }
 }
+
+//引数で与えられた配列を元にプルダウンリストを生成する
+function arrayToSelect($name, $array, $selected=null, $class='form-select'){
+    $html = "<select class='{$class}' name='{$name}'>";
+    foreach($array as $key => $value){
+        $isSelected = ($key == $selected) ? " selected" : "";
+        $html .= "<option value='{$key}'{$isSelected}>{$value}</option>";
+    }
+    $html .= "</select>";
+    return $html;
+}
