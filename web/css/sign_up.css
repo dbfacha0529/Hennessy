@@ -117,3 +117,19 @@ img {
   border-radius: 10px; /* 角丸（任意） */
 }
 
+/* ===== チェックボックス ===== */
+.form-check{
+color: #fff;
+margin: auto;
+}
+.form-check-label{
+color: #fff !important;
+}
+
+a{
+  color:#757575 ;
+  margin:auto;
+  text-decoration: none;
+}
+
+

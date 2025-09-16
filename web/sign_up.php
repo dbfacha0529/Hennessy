@@ -50,6 +50,14 @@ $passwordre = '';
         if ($password !== $passwordre) {
         $err['passwordre'] = '確認用パスワードが一致しません';
       }
+
+      // チェックボックスのバリデーション
+if (empty($_POST['agree_terms'])) {
+    $err['agree_terms'] = '利用規約に同意してください';
+}
+if (empty($_POST['age_check'])) {
+    $err['age_check'] = '18歳未満の方はご利用いただけません';
+}
     if (empty($err)) {
       //重複チェック
 if (empty($err)) {
@@ -158,6 +166,30 @@ header('Location: login.php'); // 成功したらログイン画面へ
         <div class="invalid-feedback"><?= $err['passwordre'] ?></div>
       <?php endif; ?>
     </div>
+
+<!-- 利用規約 -->
+ <a href="riyoukiyaku.php">利用規約</a>
+<div class="form-check mb-2">
+  <input class="form-check-input <?php if(isset($err['agree_terms'])) echo 'is-invalid'; ?>" 
+         type="checkbox" id="agree_terms" name="agree_terms" value="1" 
+         <?php if(!empty($_POST['agree_terms'])) echo 'checked'; ?>>
+  <label class="form-check-label" for="agree_terms">利用規約に同意します</label>
+  <?php if (isset($err['agree_terms'])): ?>
+    <div class="invalid-feedback d-block"><?= $err['agree_terms'] ?></div>
+  <?php endif; ?>
+</div>
+
+<!-- 18歳確認 -->
+<div class="form-check mb-3">
+  <input class="form-check-input <?php if(isset($err['age_check'])) echo 'is-invalid'; ?>" 
+         type="checkbox" id="age_check" name="age_check" value="1"
+         <?php if(!empty($_POST['age_check'])) echo 'checked'; ?>>
+  <label class="form-check-label" for="age_check">私は18才以上です</label>
+  <?php if (isset($err['age_check'])): ?>
+    <div class="invalid-feedback d-block"><?= $err['age_check'] ?></div>
+  <?php endif; ?>
+</div>
+
     <!-- 登録 -->
     <button type="submit" class="btn btn-Login">登録する</button>
     <h3>SMS認証に進みます</h3>
