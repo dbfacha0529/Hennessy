@@ -1,0 +1,80 @@
+
+
+/* ===== 全体設定 ===== */
+body {
+  background-color: #003018;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* 横中央 */
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  padding-top:100px;
+}
+
+/* アイコン */
+i{
+  font-size:3rem;
+  color:green;
+}
+
+/* 戻るボタン */
+.btn-back {
+  background-color: #096c3b;
+  margin-top: 100px;
+}
+
+.btn-back:hover {
+  color:#fff;
+  background-color: #07532c;
+}
+
+/* ===== ボタン共通 ===== */
+button,
+a.btn {
+  display: block !important;   /* ブロック化して中央寄せ */
+  width: 90%;                  /* 入力欄と同じ幅に揃える（90%） */
+  max-width: 400px;            /* 最大幅を設定して広がりすぎ防止 */
+  margin: 10px auto;           /* 左右自動で中央寄せ */
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  text-decoration: none;       /* aタグの下線を消す */
+  color: #fff;
+  margin-top: 200px;
+}
+
+
+
+/* カード */
+.card {
+  width: 100%;
+  margin:10px auto;
+  max-width: 400px; 
+  padding: 10px;
+}
+.card-text{
+  text-align: center;
+}
+
+h2{
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 15px;
+}
+
+/* ===== ロゴ画像 ===== */
+img {
+  width: 200px;        /* 横幅を200pxに固定 */
+  height: auto;        /* 縦は自動調整で比率を保持 */
+  margin: 20px auto;   /* 中央寄せ */
+  display: block;      /* ブロック化して中央寄せを有効に */
+  border-radius: 10px; /* 角丸（任意） */
+}

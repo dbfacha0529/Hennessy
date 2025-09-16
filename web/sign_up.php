@@ -87,7 +87,16 @@ if (empty($err)) {
     try{
       $stmt = $pdo->prepare($sql);
       $stmt->execute($arr);
-header('Location: login.php'); // 成功したらログイン画面へ
+
+
+  //各種入力値をセッション変数に保存する!
+    $_SESSION['USER_DATE']['login_id'] = $login_id;
+    $_SESSION['USER_DATE']['user_name'] = $user_name;
+    $_SESSION['USER_DATE']['tel'] = $tel;
+    $_SESSION['USER_DATE']['password'] = $password;
+
+
+header('Location: complete.php'); // 成功したら完了画面へ
             exit;
     
     
@@ -105,7 +114,7 @@ header('Location: login.php'); // 成功したらログイン画面へ
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ログイン画面</title>
+  <title>新規登録</title>
   <!--cssリンク-->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
