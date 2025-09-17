@@ -87,7 +87,7 @@ a.btn {
 
 /* 登録ボタン */
 .btn-Login {
-  
+  color: #fff;
   background-color: #4a9c73;
   margin-bottom: 0px;
   margin-top: 60px;
@@ -95,16 +95,19 @@ a.btn {
 }
 
 .btn-Login:hover {
+  color: #fff;
   background-color: #3e855f;
 }
 
 /* 戻るボタン */
 .btn-back {
+  color: #fff;
   background-color: #096c3b;
   margin-top: 100px;
 }
 
 .btn-back:hover {
+  color: #fff;
   background-color: #07532c;
 }
 

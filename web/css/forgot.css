@@ -1,0 +1,93 @@
+/* ===== 全体設定 ===== */
+body {
+  background-color: #003018;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;  /* 縦中央 */
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+    background-color: #096c3b;
+  text-align:center;
+  color:white;
+  font-size:20px;
+  padding: 10px;
+  border-radius: 7px;
+  width: 100%;
+   margin-top: 15px;
+   max-width: 400px;
+   margin:10px auto;
+}
+
+h3 {
+    background-color: #096c3b;
+  text-align: left;
+  color:white;
+  font-size:15px;
+  padding: 10px;
+  border-radius: 7px;
+  width: 100%;
+   margin-top: 15px;
+      max-width: 400px;
+   margin:10px auto;
+}
+
+/* ===== ボタン共通 ===== */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 7px;
+  text-align: center;
+  transition: 0.3s;
+  font-weight: bold;
+  text-decoration: none; /* aタグの下線消す */
+  border:none;
+     max-width: 400px;
+   margin:10px auto;
+}
+
+/* ログインボタン */
+.btn-primary {
+  background-color: #4a9c73;
+  color: white;
+    margin-top: 35px;   /* 上の余白 */
+  margin-bottom: 50px; /* 下の余白 */
+}
+.btn-primary:hover {
+  background-color: #3e855f;
+  color: #fff;
+}
+
+.btn-back{
+  background-color: #096c3b;
+  color: white;
+}
+.btn-back:hover {
+  background-color: #07532c;
+  color: #fff;
+}
+
+.form-select{
+  border:none;
+    background-color: #adbdb5;
+     max-width: 300px;
+   margin-top:10px ;  
+  margin-left: max(0px, calc((100% - 400px) / 2));
+   
+}
+.form-control{
+  border:none;
+    background-color: #adbdb5;
+     max-width: 300px;
+   margin-top:10px ;  
+     margin-left: max(0px, calc((100% - 400px) / 2));
+}
+.invalid-feedback{
+     margin-left: max(0px, calc((100% - 400px) / 2));
+}

@@ -110,6 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>再登録</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--オリジナルCSS-->
+  <link href="./css/forgot.css" rel="stylesheet">
 </head>
 <body class="p-3">
 
@@ -172,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 
-    <button type="submit" class="btn btn-primary">送信</button>
+    <button type="submit" class="btn btn-primary">認証する</button>
         <!-- TOPへ戻る -->
     <a type="button" class="btn btn-back" href="index.php">TOPへ戻る</a>
   </form>
