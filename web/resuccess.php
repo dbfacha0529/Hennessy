@@ -26,7 +26,7 @@ session_start();
   <div class="card">
     <div class="card-text">
       <i class="bi bi-check"></i>
-      <h2 class="card-title">登録が完了しました</h2>
+      <h2 class="card-title">再登録が完了しました</h2>
     </div>
   </div>
 

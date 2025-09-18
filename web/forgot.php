@@ -48,14 +48,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         // key側の確認
                         if ($key === 'password') {
                             if (password_verify($keya, $row['password'])) {
-                                $_SESSION['user'] = $row;
-                                header("Location: home.php");
+                                $_SESSION['USER_DATE'] = $row;
+                                header("Location: re_sign_up.php");
                                 exit;
                             }
                         } else {
                             if ($row[$key] === $keya) {
-                                $_SESSION['user'] = $row;
-                                header("Location: home.php");
+                                $_SESSION['USER_DATE'] = $row;
+                                header("Location: re_sign_up.php");
                                 exit;
                             }
                         }
@@ -75,16 +75,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($row) {
                     if ($key === 'password') {
                         if (password_verify($keya, $row['password'])) {
-                            $_SESSION['user'] = $row;
-                            header("Location: home.php");
+                            $_SESSION['USER_DATE'] = $row;
+                            header("Location: re_sign_up.php");
                             exit;
                         } else {
                             $err['common'] = '認証に失敗しました';
                         }
                     } else {
                         if ($row[$key] === $keya) {
-                            $_SESSION['user'] = $row;
-                            header("Location: home.php");
+                            $_SESSION['USER_DATE'] = $row;
+                            header("Location: re_sign_up.php");
                             exit;
                         } else {
                             $err['common'] = '認証に失敗しました';

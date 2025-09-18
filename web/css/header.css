@@ -1,0 +1,101 @@
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #003018;
+  color: white;
+  z-index: 1000;
+  height: 10vh; /* 画面高さの10% */
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between; /* 左右を分ける */
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 100%; /* Bootstrapの制限解除 */
+}
+
+.logo {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* 左側グループ：ロゴ画像＋テキスト */
+.left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;   /* 画像とテキストの間隔 */
+  height: 100%;
+}
+
+.logoimg {
+  height: 100%;        /* left-group の高さにフィット */
+  width: auto;         /* アスペクト比維持 */
+  object-fit: contain; /* 縦横比を崩さず収める */
+  display: block;
+}
+
+.nav .nav-list {
+  list-style: none;
+  display: none; /* 初期は非表示 */
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  background-color: #003018;
+  position: absolute;
+  right: 0;
+  width: 40vw;
+  top: 10vh; /* メニューの表示位置も合わせる */
+  font-size: 60px;
+}
+
+.nav .nav-list.show {
+  display: flex;
+}
+
+.nav .nav-list li {
+  margin: 0;
+  border-bottom: 1px solid #006644;
+}
+
+.nav .nav-list li a,
+.nav .nav-list li span {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+}
+
+/* 右側グループ：ハンバーガーアイコン＋ナビ */
+.right-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* アイコンとナビの間 */
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 100px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  margin-right: 15px;
+}
+
+/* コンテンツの隠れ対策 */
+body {
+  padding-top: 10vh;
+}
+
+h1{
+  font-size: 30px;
+  padding-top:4vh;
+}

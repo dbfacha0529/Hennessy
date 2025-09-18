@@ -170,7 +170,7 @@ header('Location: complete.php'); // 成功したら完了画面へ
     <!-- Pass word re -->
     <div class="mb-3">
       <input type="password" class="form-control <?php if (isset($err['passwordre']))
-        echo 'is-invalid'; ?>" id="passwordre" name="passwordre" value="<?= $passwordre ?>" placeholder="passwordre">
+        echo 'is-invalid'; ?>" id="passwordre" name="passwordre" value="<?= $passwordre ?>" placeholder="password">
       <?php if (isset($err['passwordre'])): ?>
         <div class="invalid-feedback"><?= $err['passwordre'] ?></div>
       <?php endif; ?>
