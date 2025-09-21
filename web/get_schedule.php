@@ -34,8 +34,8 @@ if (!$shift) { echo json_encode([]); exit; }
 
 $LO = (int)($shift['LO'] ?? 0);
 
-// shift範囲（in_timeだけ10分前に調整）
-$shiftStart = (new DateTime($shift['in_time']))->modify('-10 minutes');
+// shift範囲（in_timeだけ20分前に調整）
+$shiftStart = (new DateTime($shift['in_time']));
 $shiftEnd   = new DateTime($shift['out_time']);
 
 // 表示開始時刻の自動調整（現在時刻の切り上げ30分単位）
@@ -94,9 +94,10 @@ foreach ($times as $idx => $label) {
 
     // ③シフト範囲チェック
     if ($available) {
-        if ($currStart < $shiftStart) {
+        if ($currStart < ($shiftStart->modify('-10 minutes'))) {
             $available = false;
-        } elseif ($LO === 0 && $currEnd > $shiftEnd) {
+        } elseif (
+          $LO === 0 && $currEnd > $shiftEnd) {
             $available = false;
         }
     }
