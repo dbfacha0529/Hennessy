@@ -1,0 +1,41 @@
+.site-footer {
+  position: fixed;        /* 常に画面下に固定 */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 11vh;
+  background-color: #003018;
+  display: flex;
+  justify-content: center; /* アイコンを中央寄せ */
+  align-items: center;
+  z-index: 1000;
+}
+
+.footer-icons {
+  display: flex;
+  gap: 40px;
+}
+
+.footer-icons a {
+  color: #c8ac60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;           /* フッターの高さに合わせる */
+  font-size: calc(13vh * 0.5); /* フッター高さの70%にアイコンを合わせる */
+  text-decoration: none;
+    flex-direction: column; /* アイコンとラベルを縦に並べる */
+}
+
+.footer-icons a:hover {
+  color: #ff86d7;
+}
+
+/* 本文がフッターと被らないように余白 */
+body {
+  padding-bottom: 60px;  /* フッターの高さ分 */
+}
+.icon-label {
+  font-size: 20%; /* ラベルサイズ */
+  margin-top: 2px; /* アイコンとラベルの間隔 */
+}

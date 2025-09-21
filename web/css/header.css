@@ -93,6 +93,7 @@
 /* コンテンツの隠れ対策 */
 body {
   padding-top: 10vh;
+  width:100%;
 }
 
 h1{

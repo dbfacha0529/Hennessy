@@ -1,0 +1,51 @@
+body{
+  margin-bottom: 15vh;
+}
+
+.gcard {
+  display: flex;
+  gap: 10px;
+  background-color: #df9c9c;
+  width: 90%;
+  margin: auto;
+  height: 10vh; /* 画像高さと揃える */
+  align-items: stretch; /* 左右の高さを揃える */
+  border-radius: 7px;
+}
+
+.gcardimg {
+  width: 9vh;
+  height: 9vh;
+  object-fit: cover;
+  margin:auto;
+  margin-left:10px;
+}
+
+.gcard-textarea {
+  flex: 1;
+  display: flex;
+  justify-content: space-between; /* 左右に分ける */
+
+  padding-right: 10px;            /* 右端の余白 */
+}
+
+.left-text {
+  display: flex;
+  flex-direction: column; /* 縦に並べる */
+  justify-content: flex-start; /* 上に詰める */
+  gap: 5px; /* name と headcomment の間隔 */
+}
+
+.out_time {
+  align-self: flex-end; /* 右下に配置 */
+  font-size: 3vh;
+
+}
+.name{
+  font-size: 3vh;
+}
+.headcomment{
+  margin-left:10px;
+  font-size: 2vh;
+}
+
