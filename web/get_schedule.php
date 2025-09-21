@@ -77,25 +77,27 @@ $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // 状態判定
 $result = [];
 foreach ($times as $idx => $label) {
-    $currStart = $check_times[$idx];
-    $currEnd   = (clone $currStart)->modify("+{$courseTime} minutes");
+    // ①現在の時間枠
+    $currStart = (clone $check_times[$idx])->modify('-10 minutes'); // 開始10分前
+    $currEnd   = (clone $check_times[$idx])->modify("+{$courseTime} minutes")->modify('+10 minutes'); // 終了10分後
     $available = true;
 
-// ①既存予約との重複チェック（DBに保存済みの時間がすでにバッファ込み）
-foreach ($reserves as $r) {
-    $rStart = new DateTime($r['start_time']);
-    $rEnd   = new DateTime($r['end_time']);
-    if ($currStart < $rEnd && $currEnd > $rStart) {
-        $available = false;
-        break;
+    // ②既存予約との重複チェック
+    foreach ($reserves as $r) {
+        $rStart = new DateTime($r['start_time']); // reserveに既にバッファ込みならそのまま
+        $rEnd   = new DateTime($r['end_time']);
+        if ($currStart < $rEnd && $currEnd > $rStart) {
+            $available = false;
+            break;
+        }
     }
-}
-    // ②シフト範囲チェック
+
+    // ③シフト範囲チェック
     if ($available) {
         if ($currStart < $shiftStart) {
-            $available = false; // 開始がシフト前は不可
+            $available = false;
         } elseif ($LO === 0 && $currEnd > $shiftEnd) {
-            $available = false; // 通常は終了もシフト内
+            $available = false;
         }
     }
 
