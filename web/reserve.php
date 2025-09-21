@@ -4,28 +4,42 @@ include '../functions.php';
 
 $pdo = dbConnect();
 $k_checkgirls = k_checkgirls($pdo);
-$girls_today = girls_today($pdo);
 
-// 女の子プルダウン
-$sg_array = [];
+// 基準日を取得（明朝6時切り替え）
+$baseDate = getBaseDate();
+
+// 基準日出勤の女の子
+$girls_today = girls_targetday($pdo, $baseDate);
 $names_today = array_column($girls_today,'name');
-foreach($names_today as $name){
-    $sg_array[] = ['value'=>$name,'label'=>$name.'本日出勤'];
-}
-$names_kcheck = array_column($k_checkgirls,'name');
-foreach($names_kcheck as $name){
-    if(!in_array($name,$names_today)) $sg_array[] = ['value'=>$name,'label'=>$name];
+
+// 女の子プルダウン作成
+$sg_array = [];
+foreach($k_checkgirls as $g){
+    $label = $g['name'];
+    if(in_array($g['name'], $names_today)){
+        $label .= '（本日出勤）';
+    }
+    $sg_array[] = ['value'=>$g['name'], 'label'=>$label];
 }
 
 // コースプルダウン
 $course_array = getDropdownArray($pdo,'course','c_name');
 
-// 日付プルダウン（7日分）
+// 日付プルダウン（7日分）を基準日から作成
 $date_array = [];
 $weekdays = ['日','月','火','水','木','金','土'];
 for($i=0;$i<7;$i++){
-    $d = new DateTime("+$i day");
-    $date_array[] = ['value'=>$d->format('Y-m-d'),'label'=>$d->format('n/j').'('.$weekdays[$d->format('w')].')'];
+    $d = new DateTime($baseDate);
+    $d->modify("+$i day");
+    $label = '';
+    if($i===0) $label = '今日';
+    elseif($i===1) $label = '明日';
+    else $label = $d->format('n/j').'('.$weekdays[$d->format('w')].')';
+
+    $date_array[] = [
+        'value'=>$d->format('Y-m-d'),
+        'label'=>$label
+    ];
 }
 ?>
 
@@ -153,8 +167,8 @@ girlSelect.addEventListener('change', ()=>{
 courseSelect.addEventListener('change', updateSchedule);
 dateSelect.addEventListener('change', updateSchedule);
 
-// ページロード時に今日を選択
-dateSelect.value='<?= date("Y-m-d") ?>';
+// ページロード時に基準日を選択
+dateSelect.value='<?= $baseDate ?>';
 updateSchedule();
 </script>
 

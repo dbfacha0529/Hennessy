@@ -96,6 +96,23 @@ function girls_today($pdo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// 指定日出勤の女の子を取得
+function girls_targetday($pdo, $target_date = null) {
+    // 日付が渡されなければ今日を使う
+    if (!$target_date) {
+        $target_date = date('Y-m-d');
+    }
+
+    $sql = "SELECT g.* 
+            FROM girl g
+            JOIN shift s ON g.g_login_id = s.g_login_id
+            WHERE s.date = :date";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':date', $target_date, PDO::PARAM_STR);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 // 指定テーブルのカラムをプルダウン用配列として取得
 function getDropdownArray(PDO $pdo, string $table, string $column, string $search_keyword = '', string $search_column = ''): array {
     $sql = "SELECT {$column} FROM {$table}";
