@@ -115,6 +115,18 @@ function girls_targetday($pdo, $target_date = null) {
 }
 // 指定テーブルのカラムをプルダウン用配列として取得
 function getDropdownArray(PDO $pdo, string $table, string $column, string $search_keyword = '', string $search_column = ''): array {
+    // カラムの存在チェック
+    $columns = $pdo->query("SHOW COLUMNS FROM {$table}")->fetchAll(PDO::FETCH_COLUMN);
+
+    $order = '';
+    if (in_array('sort_order', $columns, true)) {
+        $order = " ORDER BY sort_order ASC";
+    } elseif (in_array('id', $columns, true)) {
+        $order = " ORDER BY id ASC";
+    } else {
+        $order = " ORDER BY {$column} ASC"; // あいうえお順
+    }
+
     $sql = "SELECT {$column} FROM {$table}";
     $params = [];
 
@@ -123,7 +135,7 @@ function getDropdownArray(PDO $pdo, string $table, string $column, string $searc
         $params[':keyword'] = '%' . $search_keyword . '%';
     }
 
-    $sql .= " ORDER BY {$column} ASC";
+    $sql .= $order;
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -131,7 +143,7 @@ function getDropdownArray(PDO $pdo, string $table, string $column, string $searc
 
     $result = [];
     foreach ($rows as $row) {
-        $result[$row] = $row;
+        $result[$row] = $row; // keyもvalueも同じ
     }
 
     return $result;

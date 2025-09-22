@@ -39,6 +39,7 @@ try {
 
 
         $_SESSION['USER'] = $user;
+        
         header("Location:home.php");
         unset($pdo);
         exit;

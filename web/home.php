@@ -4,6 +4,8 @@ include 'header.php';
 require_once(dirname(__FILE__) . '/../functions.php');
 
 
+
+
   // DB接続
   $pdo = dbConnect(); // 共通関数で接続
 
