@@ -251,6 +251,25 @@ function getAllOptions($pdo) {
 <div class = "total">
   <label>お支払金額</label>
 </div>
+<!-- お支払金額内訳 -->
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      
+  <div class="accordion-item" >
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        お支払金額内訳
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        
+      </div>
+    </div>
+  </div>
+ </div>
+</div>
 
 <!-- tel -->
 <div class="mb-3">
@@ -268,7 +287,6 @@ let reserve_option = [];
 let courseCost = 0;       // コース料金
 let nominationFee = 0;    // 指名料
 let hakenFee = 0;         // 派遣料
-let dispatchFee = 0;      // 指名料
 let towelFee = 0;         // タオル代
 let optionsCost = 0;      // 選択されたオプションの合計
 let couponDiscount = 0;   // クーポン割引
@@ -302,39 +320,61 @@ const availablePointEl = document.getElementById('available-point');
 const pointErrorEl = document.getElementById('point-error');
 const usePointInput = document.getElementById('use_point');
 const totalAmountEl = document.querySelector('.total');
+const totalBreakdownEl = document.getElementById('total-breakdown');
 
 // 総額計算関数（修正版）
 function updateTotalAmount() {
     let total = 0;
 
-    // 各項目を加算（数字であれば加算）
-    if (!isNaN(courseCost) && courseCost) total += courseCost;
-    if (!isNaN(nominationFee) && nominationFee) total += nominationFee;
-    if (!isNaN(dispatchFee) && dispatchFee) total += dispatchFee;
-    if (!isNaN(hakenFee) && hakenFee) total += hakenFee;
-    if (!isNaN(towelFee) && towelFee) total += towelFee;
-    if (!isNaN(optionsCost) && optionsCost) total += optionsCost;
+    // 各項目を加算（空白や未定なら0扱い）
+    const course = courseCost || 0;
+    const nomination = nominationFee || 0;
+    const haken = hakenFee || 0;
+    const towel = towelFee || 0;
+    const options = optionsCost || 0;
+    const coupon = couponDiscount || 0;
+    const point = usePoint || 0;
 
-    // クーポン・ポイントは減算（数字であれば減算）
-    if (!isNaN(couponDiscount) && couponDiscount) total -= couponDiscount;
-    if (!isNaN(usePoint) && usePoint) total -= usePoint;
+    total += course + nomination + haken + towel + options;
+    total -= coupon + point;
 
-    // マイナスにならないよう調整
     total = Math.max(0, total);
 
-    // 注意文を条件付きで追加
-    let note = '';
-    const areaVal = areaSelect.value;
-    const placeVal = placeSelect.value;
-    const otherCheck = otherAreaCheck.checked;
-
-    if (!areaVal || areaVal === '未定' || !placeVal || placeVal === '未定' || areaVal === 'その他' && otherCheck || placeVal === 'その他') {
-        note = '<div style="color:red; font-size:0.9em; margin-top:4px;">未確定の要素がある為、配送料やタオル代が加算される場合がございます</div>';
-    }
-
     // 総額表示
-    totalAmountEl.innerHTML = '<label>お支払金額: ' + total.toLocaleString() + '円</label>' + note;
+    totalAmountEl.innerHTML = `
+        <label>お支払金額: ${total.toLocaleString()}円</label>
+        <div style="color:red; font-size:0.9em; margin-top:5px;">
+            ${(!areaSelect.value || areaSelect.value==='未定' || areaSelect.value==='その他' && otherAreaCheck.checked ||
+              !placeSelect.value || placeSelect.value==='未定' || placeSelect.value==='その他') 
+              ? '※未確定の要素がある為、配送料やタオル代が加算される場合がございます' 
+              : ''}
+        </div>
+    `;
+
+    // 内訳テーブル生成（accordion-body内）
+    const accordionBody = document.querySelector('#collapseTwo .accordion-body');
+    accordionBody.innerHTML = `
+        <table style="width:100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="border-bottom:1px solid #ccc; text-align:left;">項目</th>
+              <th style="border-bottom:1px solid #ccc; text-align:right;">金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>コース料金</td><td style="text-align:right;">${course.toLocaleString()}円</td></tr>
+            <tr><td>指名料</td><td style="text-align:right;">${nomination.toLocaleString()}円</td></tr>
+            <tr><td>派遣料</td><td style="text-align:right;">${haken.toLocaleString()}円</td></tr>
+            <tr><td>タオル代</td><td style="text-align:right;">${towel.toLocaleString()}円</td></tr>
+            <tr><td>オプション合計</td><td style="text-align:right;">${options.toLocaleString()}円</td></tr>
+            <tr><td>クーポン割引</td><td style="text-align:right;">-${coupon.toLocaleString()}円</td></tr>
+            <tr><td>ポイント利用</td><td style="text-align:right;">-${point.toLocaleString()}円</td></tr>
+            <tr><td><strong>合計</strong></td><td style="text-align:right;"><strong>${total.toLocaleString()}円</strong></td></tr>
+          </tbody>
+        </table>
+    `;
 }
+
 
 // エリア選択時に料金更新（修正版）
 areaSelect.addEventListener('change', () => {
@@ -708,6 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php include 'footer.php'; ?>
+<script src="script.js"></script>  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
  crossorigin="anonymous"></script>
