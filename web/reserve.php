@@ -524,41 +524,108 @@ function resetGirlSelection(){
 }
 
 // スケジュール表示
+// スケジュール表示（修正版）
 function updateSchedule(){
     const g_name = girlSelect.value;
     const date = dateSelect.value;
     const c_name = courseSelect.value;
     resetTime();
-    if(!g_name || !date || !c_name){
+    
+    if(!date || !c_name){
         resetSchedule();
         return;
     }
-    fetch(`get_schedule.php?g_name=${encodeURIComponent(g_name)}&date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
-    .then(res=>res.json())
-    .then(data=>{
-        resetSchedule();
-        const times = Object.keys(data);
-        let header = '<th>時間</th>';
-        times.forEach(t=>header+='<th>'+t+'</th>');
-        scheduleHeader.innerHTML = header;
 
-        const tr = document.createElement('tr');
-        const tdLabel = document.createElement('td');
-        tdLabel.textContent = g_name;
-        tr.appendChild(tdLabel);
+    // コースデータからfree_checkを確認
+    const courseInfo = courseData[c_name];
+    const isFreeCheck = courseInfo && parseInt(courseInfo.free_check) === 1;
 
-        times.forEach(t=>{
-            const td = document.createElement('td');
-            td.textContent = data[t] || 'tel';
-            if(data[t] === '〇') {
-                td.style.cursor = 'pointer';
-                td.style.color = 'green';
-                td.addEventListener('click', ()=>{ hourSelect.value = t.split(':')[0]; minuteSelect.value = t.split(':')[1]; });
-            } else if(data[t] === '✖') td.style.color = 'red';
-            tr.appendChild(td);
+    if (isFreeCheck) {
+        // free_check=1の場合：女の子指定なしでスケジュール表示
+        fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
+        .then(res=>res.json())
+        .then(data=>{
+            resetSchedule();
+            const times = Object.keys(data);
+            
+            // ヘッダー行作成（横長）
+            let header = '<th>時間</th>';
+            times.forEach(t => header += '<th>' + t + '</th>');
+            scheduleHeader.innerHTML = header;
+
+            // データ行作成
+            const tr = document.createElement('tr');
+            const tdLabel = document.createElement('td');
+            tdLabel.textContent = 'フリー';
+            tr.appendChild(tdLabel);
+
+            times.forEach(time => {
+                const td = document.createElement('td');
+                td.textContent = data[time];
+                
+                if(data[time] === '〇') {
+                    td.style.cursor = 'pointer';
+                    td.style.color = 'green';
+                    td.addEventListener('click', ()=>{
+                        hourSelect.value = time.split(':')[0];
+                        minuteSelect.value = time.split(':')[1];
+                    });
+                } else if(data[time] === '✖') {
+                    td.style.color = 'red';
+                }
+                
+                tr.appendChild(td);
+            });
+            
+            scheduleBody.appendChild(tr);
+        })
+        .catch(err => {
+            console.error('Free schedule fetch error:', err);
+            resetSchedule();
         });
-        scheduleBody.appendChild(tr);
-    });
+    } else {
+        // 既存の処理（女の子指定あり）
+        if (!g_name) {
+            resetSchedule();
+            return;
+        }
+        
+        fetch(`get_schedule.php?g_name=${encodeURIComponent(g_name)}&date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
+        .then(res=>res.json())
+        .then(data=>{
+            resetSchedule();
+            const times = Object.keys(data);
+            let header = '<th>時間</th>';
+            times.forEach(t=>header+='<th>'+t+'</th>');
+            scheduleHeader.innerHTML = header;
+
+            const tr = document.createElement('tr');
+            const tdLabel = document.createElement('td');
+            tdLabel.textContent = g_name;
+            tr.appendChild(tdLabel);
+
+            times.forEach(t=>{
+                const td = document.createElement('td');
+                td.textContent = data[t] || 'tel';
+                if(data[t] === '〇') {
+                    td.style.cursor = 'pointer';
+                    td.style.color = 'green';
+                    td.addEventListener('click', ()=>{ 
+                        hourSelect.value = t.split(':')[0]; 
+                        minuteSelect.value = t.split(':')[1]; 
+                    });
+                } else if(data[t] === '✖') {
+                    td.style.color = 'red';
+                }
+                tr.appendChild(td);
+            });
+            scheduleBody.appendChild(tr);
+        })
+        .catch(err => {
+            console.error('Regular schedule fetch error:', err);
+            resetSchedule();
+        });
+    }
 }
 
 // 女の子オプション読み込み
@@ -627,6 +694,7 @@ girlSelect.addEventListener('change', ()=>{
 });
 
 // コース選択
+// コース選択（修正版）
 courseSelect.addEventListener('change', function(){
     const c_name = this.value;
     if(!c_name){
@@ -647,6 +715,7 @@ courseSelect.addEventListener('change', function(){
             } else {
                 girlSelect.disabled = false;
             }
+            // スケジュール更新（free_checkの状態に応じて処理される）
             updateSchedule();
         })
         .catch(err=>{
