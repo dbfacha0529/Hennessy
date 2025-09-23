@@ -1,8 +1,16 @@
 <?php 
 include 'header.php';
+// エラー表示とフォーム復元処理
+$err = $_SESSION['RESERVE_ERRORS'] ?? [];
+$old = $_SESSION['RESERVE_INPUT'] ?? [];
+
+// 使ったら消す
+unset($_SESSION['RESERVE_ERRORS'], $_SESSION['RESERVE_INPUT']);
+
 
 $pdo = dbConnect();
 $k_checkgirls = k_checkgirls($pdo);
+
 
 // 基準日を取得（明朝6時切り替え）
 $baseDate = getBaseDate();
@@ -95,15 +103,32 @@ function getAllOptions($pdo) {
 
 <link href="./css/reserve.css" rel="stylesheet">
 
+<?php if (!empty($err)): ?>
+  <div class="alert alert-danger">
+    入力内容に誤りがあります。各項目をご確認ください。
+  </div>
+<?php endif; ?>
+
 <!-- 女の子選択 -->
 <div class="mb-3">
   <label for="girl-select">女の子を選択</label>
-  <select id="girl-select" class="form-select">
-    <option value="">-- 選択してください --</option>
-    <?php foreach($sg_array as $g): ?>
-      <option value="<?= htmlspecialchars($g['value']) ?>"><?= htmlspecialchars($g['label']) ?></option>
+<select id="girl-select" class="form-select" name="girl_name">
+  <option value="">-- 選択してください --</option>
+  <?php foreach($sg_array as $g): ?>
+    <option value="<?= htmlspecialchars($g['value']) ?>"
+      <?= (isset($old['girl_name']) && $old['girl_name'] === $g['value']) ? 'selected' : '' ?>>
+      <?= htmlspecialchars($g['label']) ?>
+    </option>
+  <?php endforeach; ?>
+</select>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['girl'])): ?>
+    <?php foreach ($err['girl'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
     <?php endforeach; ?>
-  </select>
+  <?php endif; ?>
 </div>
 
 <!-- 女の子カード -->
@@ -121,23 +146,45 @@ function getAllOptions($pdo) {
 <!-- コース選択 -->
 <div class="mb-3">
   <label for="course-select">コースを選択</label>
-  <select id="course-select" class="form-select">
-    <option value="">-- 選択してください --</option>
-    <?php foreach($course_array as $v=>$l): ?>
-      <option value="<?= htmlspecialchars($v) ?>"><?= htmlspecialchars($l) ?></option>
+<select id="course-select" class="form-select" name="course_name">
+  <option value="">-- 選択してください --</option>
+  <?php foreach($course_array as $v=>$l): ?>
+    <option value="<?= htmlspecialchars($v) ?>"
+      <?= (isset($old['course_name']) && $old['course_name'] === $v) ? 'selected' : '' ?>>
+      <?= htmlspecialchars($l) ?>
+    </option>
+  <?php endforeach; ?>
+</select>
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['course'])): ?>
+    <?php foreach ($err['course'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
     <?php endforeach; ?>
-  </select>
+  <?php endif; ?>
 </div>
 
 <!-- 日付選択 -->
 <div class="mb-3">
   <label for="date-select">日付を選択</label>
-  <select id="date-select" class="form-select">
-    <option value="">-- 選択してください --</option>
-    <?php foreach($date_array as $d): ?>
-      <option value="<?= htmlspecialchars($d['value']) ?>"><?= htmlspecialchars($d['label']) ?></option>
+<select id="date-select" class="form-select" name="reserve_date">
+  <option value="">-- 選択してください --</option>
+  <?php foreach($date_array as $d): ?>
+    <option value="<?= htmlspecialchars($d['value']) ?>"
+      <?= (isset($old['reserve_date']) && $old['reserve_date'] === $d['value']) ? 'selected' : '' ?>>
+      <?= htmlspecialchars($d['label']) ?>
+    </option>
+  <?php endforeach; ?>
+</select>
+
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['date'])): ?>
+    <?php foreach ($err['date'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
     <?php endforeach; ?>
-  </select>
+  <?php endif; ?>
 </div>
 
 <!-- 予約可能時間表 -->
@@ -154,6 +201,14 @@ function getAllOptions($pdo) {
   <select id="time-select" class="form-select">
     <option value="">-- 選択してください --</option>
   </select>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['time'])): ?>
+    <?php foreach ($err['time'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <!-- place選択 -->
@@ -166,6 +221,13 @@ function getAllOptions($pdo) {
     <?php endforeach; ?>
     <option value="その他">その他</option>
   </select>
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['place'])): ?>
+    <?php foreach ($err['place'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <div class="mb-3" id="other-field" style="display:none;">
@@ -183,6 +245,14 @@ function getAllOptions($pdo) {
     <?php endforeach; ?>
     <option value="その他">その他</option>
   </select>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['area'])): ?>
+    <?php foreach ($err['area'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <div class="mb-3" id="other-area-wrapper" style="display:none;">
@@ -201,7 +271,17 @@ function getAllOptions($pdo) {
 <div class="mb-3" id="options-wrapper" style="display:none;">
   <label class="form-label">オプション</label>
   <div id="options-list"></div>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['option'])): ?>
+    <?php foreach ($err['option'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
+
+
 
 <!-- お支払方法 -->
 <div class="mb-3">
@@ -213,6 +293,14 @@ function getAllOptions($pdo) {
   <div id="pay-message" style="color:red; margin-top:5px; display:none;">
     未定、不確定な要素があるためお支払は現金のみとなります
   </div>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['pay'])): ?>
+    <?php foreach ($err['pay'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <!-- クーポン -->
@@ -220,6 +308,14 @@ function getAllOptions($pdo) {
   <label for="coupon_code" class="form-label">クーポン</label>
   <input type="text" class="form-control" id="coupon_code" placeholder="クーポンコード">
   <div id="coupon-result" style="margin-top:5px; color:blue;"></div>
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['coupon'])): ?>
+    <?php foreach ($err['coupon'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <!-- ポイント -->
@@ -230,6 +326,14 @@ function getAllOptions($pdo) {
   <div id="point-error" style="color:red; margin-top:2px;"></div>
 </div>
   <input type="text" class="form-control" id="use_point" placeholder="ご利用ポイント入力">
+
+
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['point'])): ?>
+    <?php foreach ($err['point'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
 
 <!-- お支払金額 -->
@@ -260,11 +364,220 @@ function getAllOptions($pdo) {
 <div class="mb-3">
   <label for="use_tel" class="form-label">ご連絡先</label>
   <input type="text" class="form-control" id="use_tel" placeholder="ご連絡先"
-         value="<?= htmlspecialchars($_SESSION['USER']['tel'] ?? '') ?>">
+         value="<?= htmlspecialchars($old['contact_tel'] ?? $_SESSION['USER']['tel'] ?? '') ?>">
+
+
   <label>※ご予約認証に使用いたしますので<br>お手元の端末の番号をご入力ください</label>
 </div>
 
+  <!-- エラーメッセージ表示 -->
+  <?php if (!empty($err['tel'])): ?>
+    <?php foreach ($err['tel'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
+</div>
+
+<!-- 予約送信ボタン -->
+<div class="mb-3 text-center">
+  <button type="button" class="btn btn-primary btn-lg" onclick="submitReservation()">
+    予約内容を確認する
+  </button>
+</div>
+
+
 <script>
+// PHPから復元値を渡す
+const oldData = <?= json_encode($old) ?>;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 復元処理を先に行う
+    // 女の子
+    if(oldData.girl_name) document.getElementById('girl-select').value = oldData.girl_name;
+
+    // コース
+    if(oldData.course_name) document.getElementById('course-select').value = oldData.course_name;
+
+    // 日付
+    if(oldData.reserve_date) document.getElementById('date-select').value = oldData.reserve_date;
+
+    // 時間（後で再設定するので、ここでは一旦保存のみ）
+    const savedTime = oldData.reserve_time || null;
+
+    // 形態
+    if(oldData.place) document.getElementById('place-select').value = oldData.place;
+
+    // placeその他
+    if(oldData.place_other) document.getElementById('other-textarea').value = oldData.place_other;
+
+    // エリア
+    if(oldData.area) document.getElementById('area-select').value = oldData.area;
+
+    // areaその他
+    if(oldData.area_other) document.getElementById('other-area-text').value = oldData.area_other;
+
+    // 郡山市外チェック
+    if(oldData.area_outside && oldData.area_outside === '1') {
+        document.getElementById('flexCheckDefault').checked = true;
+    }
+
+    // 支払方法
+    if(oldData.payment_method) document.getElementById('pay-select').value = oldData.payment_method;
+
+    // クーポン
+    if(oldData.coupon_code) document.getElementById('coupon_code').value = oldData.coupon_code;
+
+    // ポイント
+    if(oldData.use_point) document.getElementById('use_point').value = oldData.use_point;
+
+    // 電話番号
+    if(oldData.contact_tel) document.getElementById('use_tel').value = oldData.contact_tel;
+
+    // その他表示非表示の制御
+    if(oldData.place === 'その他') document.getElementById('other-field').style.display = 'block';
+    if(oldData.area === 'その他') document.getElementById('other-area-wrapper').style.display = 'block';
+
+    // ここから追加：復元後にイベントを手動発火させて表示を更新
+    
+    // コース選択の復元処理（コース→女の子の順序で処理）
+    if(oldData.course_name) {
+        const courseEvent = new Event('change');
+        courseSelect.dispatchEvent(courseEvent);
+        
+        // コース処理完了後に女の子選択を処理
+        setTimeout(() => {
+            if(oldData.girl_name) {
+                const girlEvent = new Event('change');
+                girlSelect.dispatchEvent(girlEvent);
+            }
+            
+            // スケジュール更新後に時間を復元
+            setTimeout(() => {
+                if(savedTime) {
+                    // 時間プルダウンが生成されるのを待ってから値を設定
+                    const checkTimeOptions = () => {
+                        const timeOptions = timeSelect.querySelectorAll('option');
+                        const timeExists = Array.from(timeOptions).some(opt => opt.value === savedTime);
+                        
+                        if(timeExists) {
+                            timeSelect.value = savedTime;
+                        } else if(timeOptions.length > 1) {
+                            // まだオプションが生成されていない場合は少し待つ
+                            setTimeout(checkTimeOptions, 100);
+                        }
+                    };
+                    
+                    checkTimeOptions();
+                }
+                
+                // オプションのチェックボックス復元
+                if(oldData.options && Array.isArray(oldData.options)) {
+                    const restoreOptions = () => {
+                        const optionCheckboxes = document.querySelectorAll('#options-list input[type="checkbox"]');
+                        
+                        if(optionCheckboxes.length > 0) {
+                            // reserve_optionに復元値を設定
+                            reserve_option = [...oldData.options];
+                            
+                            optionCheckboxes.forEach(checkbox => {
+                                if(oldData.options.includes(checkbox.value)) {
+                                    checkbox.checked = true;
+                                }
+                            });
+                            
+                            // オプション費用を更新
+                            updateOptionsCost();
+                        } else {
+                            // オプションがまだ生成されていない場合は少し待つ
+                            setTimeout(restoreOptions, 100);
+                        }
+                    };
+                    
+                    restoreOptions();
+                }
+            }, 500); // スケジュール更新を待つ
+            
+        }, 300); // コース処理を待つ
+        
+    } else if(oldData.girl_name) {
+        // コースが選択されていない場合は女の子のみ
+        const girlEvent = new Event('change');
+        girlSelect.dispatchEvent(girlEvent);
+        
+        setTimeout(() => {
+            if(savedTime) {
+                const checkTimeOptions = () => {
+                    const timeOptions = timeSelect.querySelectorAll('option');
+                    const timeExists = Array.from(timeOptions).some(opt => opt.value === savedTime);
+                    
+                    if(timeExists) {
+                        timeSelect.value = savedTime;
+                    } else if(timeOptions.length > 1) {
+                        setTimeout(checkTimeOptions, 100);
+                    }
+                };
+                
+                checkTimeOptions();
+            }
+            
+            // オプションのチェックボックス復元（女の子のみの場合）
+            if(oldData.options && Array.isArray(oldData.options)) {
+                const restoreOptions = () => {
+                    const optionCheckboxes = document.querySelectorAll('#options-list input[type="checkbox"]');
+                    
+                    if(optionCheckboxes.length > 0) {
+                        // reserve_optionに復元値を設定
+                        reserve_option = [...oldData.options];
+                        
+                        optionCheckboxes.forEach(checkbox => {
+                            if(oldData.options.includes(checkbox.value)) {
+                                checkbox.checked = true;
+                            }
+                        });
+                        
+                        // オプション費用を更新
+                        updateOptionsCost();
+                    } else {
+                        // オプションがまだ生成されていない場合は少し待つ
+                        setTimeout(restoreOptions, 100);
+                    }
+                };
+                
+                restoreOptions();
+            }
+        }, 500);
+    }
+
+    // その他の復元処理
+    if(oldData.place) {
+        const placeEvent = new Event('change');
+        placeSelect.dispatchEvent(placeEvent);
+    }
+    
+    if(oldData.area) {
+        const areaEvent = new Event('change');
+        areaSelect.dispatchEvent(areaEvent);
+    }
+
+    // クーポンがある場合は割引計算を実行
+    if(oldData.coupon_code) {
+        updateCouponDiscount();
+    }
+
+    // ポイント入力がある場合はバリデーション実行
+    if(oldData.use_point) {
+        const pointEvent = new Event('input');
+        usePointInput.dispatchEvent(pointEvent);
+    }
+
+    // 支払い方法の制限チェック
+    checkPaymentLock();
+    
+    // 総額計算
+    updateTotalAmount();
+});
+
+
 const kCheckGirls = <?= json_encode($k_checkgirls) ?>;
 let reserve_option = [];
 
@@ -522,61 +835,58 @@ function updateSchedule(){
     const courseInfo = courseData[c_name];
     const isFreeCheck = courseInfo && parseInt(courseInfo.free_check) === 1;
 
-    if (isFreeCheck) {
-        // free_check=1の場合：女の子指定なしでスケジュール表示
-        fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
-        .then(res=>res.json())
-        .then(data=>{
-            resetSchedule();
-            const times = Object.keys(data);
-            
-            // ヘッダー行作成（横長）
-            let header = '<th>時間</th>';
-            times.forEach(t => header += '<th>' + t + '</th>');
-            scheduleHeader.innerHTML = header;
+if (isFreeCheck) {
+    fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
+    .then(res => res.json())
+    .then(data => {
+        resetSchedule();
+        const times = Object.keys(data);
 
-            // データ行作成
-            const tr = document.createElement('tr');
-            const tdLabel = document.createElement('td');
-            tdLabel.textContent = 'フリー';
-            tr.appendChild(tdLabel);
+        // ヘッダー行作成
+        let header = '<th>時間</th>';
+        times.forEach(t => header += '<th>' + t + '</th>');
+        scheduleHeader.innerHTML = header;
 
-            times.forEach(time => {
-                const td = document.createElement('td');
-                td.textContent = data[time];
-                
-                if(data[time] === '〇') {
-                    td.style.cursor = 'pointer';
-                    td.style.color = 'green';
-                    td.addEventListener('click', ()=>{
-                       timeSelect.value = t; 
-                    });
-                } else if(data[time] === '✖') {
-                    td.style.color = 'red';
-                }
-                
-                tr.appendChild(td);
-            });
-            
-            scheduleBody.appendChild(tr);
+        // データ行作成
+        const tr = document.createElement('tr');
+        const tdLabel = document.createElement('td');
+        tdLabel.textContent = 'フリー';
+        tr.appendChild(tdLabel);
 
-            // 既存の times.forEach(...) の処理が終わった後に追加
-// 予約可能時間（〇の時間だけ）をプルダウンにセット
-const availableTimes = times.filter(t => data[t] === '〇');
-timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
-availableTimes.forEach(t => {
-    const option = document.createElement('option');
-    option.value = t;
-    option.textContent = t;
-    timeSelect.appendChild(option);
-});
-
-        })
-        .catch(err => {
-            console.error('Free schedule fetch error:', err);
-            resetSchedule();
+        times.forEach(t => {
+            const td = document.createElement('td');
+            td.textContent = data[t]; // ← ここは必ず t
+            if(data[t] === '〇') {
+                td.style.cursor = 'pointer';
+                td.style.color = 'green';
+                const timeValue = t; // 安全にクロージャ内で保持
+                td.addEventListener('click', () => {
+                   timeSelect.value = timeValue; // ← t を直接使わず timeValue
+                });
+            } else if(data[t] === '✖') {
+                td.style.color = 'red';
+            }
+            tr.appendChild(td);
         });
-    } else {
+
+        scheduleBody.appendChild(tr);
+
+        // 予約可能時間をプルダウンにセット
+        const availableTimes = times.filter(t => data[t] === '〇');
+        timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
+        availableTimes.forEach(t => {
+            const option = document.createElement('option');
+            option.value = t;
+            option.textContent = t;
+            timeSelect.appendChild(option);
+        });
+    })
+    .catch(err => {
+        console.error('Free schedule fetch error:', err);
+        resetSchedule();
+    });
+}
+ else {
         // 既存の処理（女の子指定あり）
         if (!g_name) {
             resetSchedule();
@@ -816,7 +1126,58 @@ fetch('get_point.php')
 // 初期表示時に総額を更新
 document.addEventListener('DOMContentLoaded', function() {
     updateTotalAmount();
+    updateSchedule();
 });
+
+
+// 予約送信ボタンとフォーム送信処理を追加
+function submitReservation() {
+
+
+    // フォーム作成・送信
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'process_reserve.php';
+
+    // データ収集・追加
+    const formData = {
+        girl_name: girlSelect.value,
+        course_name: courseSelect.value,
+        reserve_date: dateSelect.value,
+        reserve_time: timeSelect.value,
+        place: placeSelect.value,
+        place_other: document.getElementById('other-textarea').value,
+        area: areaSelect.value,
+        area_other: document.getElementById('other-area-text').value,
+        area_outside: document.getElementById('flexCheckDefault').checked ? '1' : '',
+        payment_method: paySelect.value,
+        coupon_code: couponInput.value,
+        use_point: usePointInput.value,
+        contact_tel: document.getElementById('use_tel').value
+    };
+
+    // オプション追加
+    reserve_option.forEach((option, index) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `options[${index}]`;
+        input.value = option;
+        form.appendChild(input);
+    });
+
+    // 他のデータ追加
+    for (let [key, value] of Object.entries(formData)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value || '';
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
 
 </script>
 
