@@ -42,12 +42,8 @@ for($i=0;$i<7;$i++){
 }
 
 // 時間プルダウン作成
-$h_array = [];
-for ($h = 17; $h <= 23; $h++) $h_array[] = $h;
-for ($h = 0; $h <= 4; $h++) $h_array[] = $h;
+$time_array = [];
 
-// 分プルダウン
-$m_array = array_map(fn($m) => str_pad($m, 2, '0', STR_PAD_LEFT), range(0, 50, 10));
 
 // area / place プルダウン
 $area_array = getDropdownArray($pdo, 'area', 'area_name');
@@ -152,23 +148,12 @@ function getAllOptions($pdo) {
   </table>
 </div>
 
-<!-- 時間・分選択 -->
+<!-- 時間選択 -->
 <div class="mb-3">
   <label for="time-select">時間を選択</label>
-  <div class="d-flex">
-    <select id="hour-select" class="form-select me-2">
-      <option value="">-- 時 --</option>
-      <?php foreach ($h_array as $h): ?>
-        <option value="<?= str_pad($h,2,'0',STR_PAD_LEFT) ?>"><?= str_pad($h,2,'0',STR_PAD_LEFT) ?></option>
-      <?php endforeach; ?>
-    </select>
-    <select id="minute-select" class="form-select">
-      <option value="">-- 分 --</option>
-      <?php foreach ($m_array as $m): ?>
-        <option value="<?= $m ?>"><?= $m ?></option>
-      <?php endforeach; ?>
-    </select>
-  </div>
+  <select id="time-select" class="form-select">
+    <option value="">-- 選択してください --</option>
+  </select>
 </div>
 
 <!-- place選択 -->
@@ -303,8 +288,6 @@ const courseSelect = document.getElementById('course-select');
 const dateSelect = document.getElementById('date-select');
 const scheduleHeader = document.getElementById('schedule-header');
 const scheduleBody = document.getElementById('schedule-body');
-const hourSelect = document.getElementById('hour-select');
-const minuteSelect = document.getElementById('minute-select');
 const placeSelect = document.getElementById('place-select');
 const otherPlaceWrapper = document.getElementById('other-field');
 const areaSelect = document.getElementById('area-select');
@@ -320,7 +303,7 @@ const availablePointEl = document.getElementById('available-point');
 const pointErrorEl = document.getElementById('point-error');
 const usePointInput = document.getElementById('use_point');
 const totalAmountEl = document.querySelector('.total');
-const totalBreakdownEl = document.getElementById('total-breakdown');
+const timeSelect = document.getElementById('time-select');
 
 // 総額計算関数（修正版）
 function updateTotalAmount() {
@@ -508,8 +491,7 @@ usePointInput.addEventListener('input', () => {
 
 // リセット関数
 function resetTime(){
-    hourSelect.value = '';
-    minuteSelect.value = '';
+    if(timeSelect) timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
 }
 function resetSchedule(){
     scheduleHeader.innerHTML='<th>時間</th>';
@@ -567,8 +549,7 @@ function updateSchedule(){
                     td.style.cursor = 'pointer';
                     td.style.color = 'green';
                     td.addEventListener('click', ()=>{
-                        hourSelect.value = time.split(':')[0];
-                        minuteSelect.value = time.split(':')[1];
+                       timeSelect.value = t; 
                     });
                 } else if(data[time] === '✖') {
                     td.style.color = 'red';
@@ -578,6 +559,18 @@ function updateSchedule(){
             });
             
             scheduleBody.appendChild(tr);
+
+            // 既存の times.forEach(...) の処理が終わった後に追加
+// 予約可能時間（〇の時間だけ）をプルダウンにセット
+const availableTimes = times.filter(t => data[t] === '〇');
+timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
+availableTimes.forEach(t => {
+    const option = document.createElement('option');
+    option.value = t;
+    option.textContent = t;
+    timeSelect.appendChild(option);
+});
+
         })
         .catch(err => {
             console.error('Free schedule fetch error:', err);
@@ -611,8 +604,7 @@ function updateSchedule(){
                     td.style.cursor = 'pointer';
                     td.style.color = 'green';
                     td.addEventListener('click', ()=>{ 
-                        hourSelect.value = t.split(':')[0]; 
-                        minuteSelect.value = t.split(':')[1]; 
+                        timeSelect.value = t; 
                     });
                 } else if(data[t] === '✖') {
                     td.style.color = 'red';
@@ -620,6 +612,18 @@ function updateSchedule(){
                 tr.appendChild(td);
             });
             scheduleBody.appendChild(tr);
+
+            // 既存の times.forEach(...) の処理が終わった後に追加
+// 予約可能時間（〇の時間だけ）をプルダウンにセット
+const availableTimes = times.filter(t => data[t] === '〇');
+timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
+availableTimes.forEach(t => {
+    const option = document.createElement('option');
+    option.value = t;
+    option.textContent = t;
+    timeSelect.appendChild(option);
+});
+
         })
         .catch(err => {
             console.error('Regular schedule fetch error:', err);
