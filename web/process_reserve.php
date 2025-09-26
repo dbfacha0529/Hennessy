@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $coupon_code = trim($_POST['coupon_code'] ?? '');
     $use_point = (int)($_POST['use_point'] ?? 0);
     $contact_tel = trim($_POST['contact_tel'] ?? '');
-    
+    $other = trim($_POST['comment'] ?? '');
     // バリデーション開始
     
     // 1. コース必須チェック
@@ -112,7 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    
+        if (!empty($place_other) && mb_strlen($place_other) > 300) {
+        $err['place'][] = '300文字以内でご記入ください';
+    }
     // 6. area（エリア）チェック
     if (empty($area)) {
         $err['area'][] = 'エリアを選択してください';
@@ -131,6 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+    }
+        // ★ area_other の文字数チェック
+    if (!empty($area_other) && mb_strlen($area_other) > 300) {
+        $err['area'][] = '300文字以内でご記入ください';
     }
     
     // 7. オプションチェック（女の子が選択されている場合のみ）
@@ -193,7 +199,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $err['tel'][]  = '連絡先は11桁の数字で入力してください';
         }
     }
-    
+    //12.備考欄チェック
+        if (!empty($other) && mb_strlen($other) > 300) {
+        $err['comment'][] = '300文字以内でご記入ください';
+    }
     // 12. 予約重複チェック（エラーがここまでない場合のみ）
     if (empty($err)) {
         // 時間重複チェック用の開始・終了時間計算

@@ -378,6 +378,19 @@ function getAllOptions($pdo) {
   <?php endif; ?>
 </div>
 
+<!-- 備考欄 -->
+  <div class="mb-3" id="other-comment">
+    <label for="other-comment-text" class="form-label">その他</label>
+
+    <textarea class="form-control" id="other-comment-text" name="comment" rows="3"><?= htmlspecialchars($old['comment'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+
+    <?php if (!empty($err['comment'])): ?>
+      <?php foreach ($err['comment'] as $msg): ?>
+        <p class="error text-danger"><?= htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') ?></p>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+
 <!-- 予約送信ボタン -->
 <div class="mb-3 text-center">
   <button type="button" class="btn btn-primary btn-lg" onclick="submitReservation()">
@@ -1153,7 +1166,8 @@ function submitReservation() {
         payment_method: paySelect.value,
         coupon_code: couponInput.value,
         use_point: usePointInput.value,
-        contact_tel: document.getElementById('use_tel').value
+        contact_tel: document.getElementById('use_tel').value,
+        comment: document.getElementById('other-comment-text').value
     };
 
     // オプション追加
