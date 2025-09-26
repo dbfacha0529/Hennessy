@@ -316,11 +316,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'coupon_code' => $coupon_code,
             'use_point' => $use_point,
             'contact_tel' => $contact_tel,
-            'pricing' => $reserveData['pricing']
+            'pricing' => $reserveData['pricing'],
+            'comment' => $other
         ];
         
         // 確認画面にリダイレクト
+        $_SESSION['RESERVE_INPUT'] = $_POST;
         header('Location: reserve_confirm.php');
+        
         exit;
         
     } else {

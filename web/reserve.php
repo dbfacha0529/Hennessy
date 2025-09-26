@@ -630,6 +630,7 @@ const pointErrorEl = document.getElementById('point-error');
 const usePointInput = document.getElementById('use_point');
 const totalAmountEl = document.querySelector('.total');
 const timeSelect = document.getElementById('time-select');
+const comment = document.getElementById('other-comment-text');
 
 // 総額計算関数（修正版）
 function updateTotalAmount() {

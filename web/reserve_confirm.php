@@ -6,10 +6,7 @@ include 'header.php';
 $pdo = dbConnect();
 
 
-// 配列の中身を確認
-echo '<pre>';
-print_r($_SESSION["RESERVE_DATA"]);
-echo '</pre>';
+
 
 //配列の中身を分かりやすい変数へ
 
@@ -46,11 +43,11 @@ $orig_date = $_SESSION["RESERVE_DATA"]['reserve_date']; // DATE型の文字列
 $date = $dateObj->format('Y-m-d');
 
 
-    $date = $_SESSION["RESERVE_DATA"]['reserve_date'];   // 例: "2025-09-23"
+    $dates = $_SESSION["RESERVE_DATA"]['reserve_date'];   // 例: "2025-09-23"
     $time = $_SESSION["RESERVE_DATA"]['reserve_time'];   // 例: "14:30:00"
 
     // DATE と TIME を結合して DateTime オブジェクトを作成
-$in_time = new DateTime($date . ' ' . $time);
+$in_time = new DateTime($dates . ' ' . $time);
 
 
 $out_time = clone $in_time; // 元の日時を保持するためクローン
@@ -79,6 +76,7 @@ $g_login_id = $stmt->fetchColumn(); // 該当がなければ false が返る
 
 $login_id = $_SESSION["USER"]['login_id'];
 $tel = $_SESSION["RESERVE_DATA"]['contact_tel'];
+$user_tel = $_SESSION['USER']['tel'];
 $user_name = $_SESSION["USER"]['user_name'];
 $options = $_SESSION["RESERVE_DATA"]['options'];//これ配列なんだよね
 $place = $_SESSION["RESERVE_DATA"]['place'];
@@ -88,7 +86,7 @@ $area_comment = $_SESSION["RESERVE_DATA"]['area_other'];
 $hotel = $_SESSION["RESERVE_DATA"][''];
 $hotel_num = $_SESSION["RESERVE_DATA"][''];
 $hotel_comment = $_SESSION["RESERVE_DATA"][''];
-
+$comment = $_SESSION["RESERVE_DATA"]['comment'];
     $coupon_code = $_SESSION["RESERVE_DATA"]['coupon_code'];
     if ($coupon_code) {try {
         $stmt = $pdo->prepare("SELECT coupon_name FROM coupon WHERE coupon_code = :coupon_code LIMIT 1");
@@ -104,8 +102,8 @@ $point = $_SESSION["RESERVE_DATA"]['use_point'];
 $pay = $_SESSION["RESERVE_DATA"]['payment_method'];
 $pay_done = $_SESSION["RESERVE_DATA"][''];
 $done = $_SESSION["RESERVE_DATA"]['']; 
-$cost = $_SESSION["RESERVE_DATA"]['total_amount']; 
-$cost_uchiwake = $_SESSION["RESERVE_DATA"]['pricing']; 
+
+$cost = $_SESSION["RESERVE_DATA"]['pricing']; 
 
 
 $dt = new DateTime($orig_date);  // DATE型からDateTimeに変換
@@ -116,14 +114,33 @@ $orig_date_fmt = $dt->format('Y年n月j日（')
                  . '）';
 $in_time_fmt = $in_time->format('H時i分'); // 文字列に変換
 $out_time_fmt = $out_time->format('H時i分'); // 文字列に変換
-
+$total_cost = $cost['total_amount'];
 $pay_label = '';
     if ($pay == 1) {
         $pay_label = '現金';
     } elseif ($pay == 2) {
         $pay_label = 'クレジットカード';
     }
-//<?= htmlspecialchars($tel, ENT_QUOTES, 'UTF-8') ?>
+
+$options_cost = [];
+
+    if (!empty($options)) {
+        foreach ($options as $opt) {
+            try {
+                $stmt = $pdo->prepare("SELECT option_cost FROM options WHERE option_name = :option_name LIMIT 1");
+                $stmt->bindValue(':option_name', $opt, PDO::PARAM_STR);
+                $stmt->execute();
+                $opt_cost = $stmt->fetchColumn();
+
+                // 見つかった場合はそのまま、なければ null を入れる
+                $options_cost[] = $opt_cost !== false ? (int)$opt_cost : null;
+            } catch (PDOException $e) {
+                // エラー時は null を入れて続行
+                $options_cost[] = null;
+            }
+        }
+    }
+ ?>
   <!--オリジナルCSS-->
   <link href="./css/reserve_confirm.css" rel="stylesheet">
 
@@ -156,10 +173,12 @@ $pay_label = '';
       <td>コース時間</td>
       <td><?= htmlspecialchars($course_time, ENT_QUOTES, 'UTF-8') ?>分</td>
     </tr>
+    <?php if (!empty($g_name)): ?>
     <tr>
       <td>ご指名</td>
       <td><?= htmlspecialchars($g_name, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
+    <?php endif; ?>
     <tr>
       <td>ご利用場所</td>
       <td><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></td>
@@ -179,10 +198,12 @@ $pay_label = '';
       <td><?= htmlspecialchars($area_comment, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
     <?php endif; ?>
+    <?php if (!empty($options)): ?>
     <tr>
        <td>オプション</td>
        <td><?= nl2br(htmlspecialchars(implode("\n", $options), ENT_QUOTES, 'UTF-8')) ?></td>
     </tr>
+    <?php endif; ?>
     <tr>
       <td>お支払方法</td>
       <td><?= htmlspecialchars($pay_label, ENT_QUOTES, 'UTF-8') ?></td>
@@ -211,42 +232,113 @@ $pay_label = '';
   <tbody>
     <tr>
       <td>コース</td>
-      <td>3,000円</td>
+      <td><?= htmlspecialchars($cost['course_cost'], ENT_QUOTES, 'UTF-8') ?>円</td>
     </tr>
+    <?php if (!empty($cost['nomination_fee'])): ?>
     <tr>
       <td>指名料</td>
-      <td>10,000円</td>
+      <td><?= htmlspecialchars($cost['nomination_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
     </tr>
+    <?php endif; ?>
+    <?php if (!empty($cost['haken_fee'])): ?>
     <tr>
       <td>派遣料</td>
-      <td>2,000円</td>
+      <td><?= htmlspecialchars($cost['haken_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
     </tr>
+    <?php endif; ?>
+    <?php if (!empty($cost['towel_fee'])): ?>
     <tr>
-      <td>タオル代</td>
-      <td>3,000円</td>
+      <td>タオル料</td>
+      <td><?= htmlspecialchars($cost['towel_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
     </tr>
+    <?php endif; ?>
+    <?php if (!empty($options)): ?>
     <tr>
-      <td>オプション</td>
-      <td>3,000円</td>
+      <td>オプション料</td>
+      <td></td>
     </tr>
+    <?php foreach ($options as $index => $opt_name): ?>
     <tr>
-      <td>クーポン</td>
-      <td>3,000円</td>
+      <td><?= htmlspecialchars($opt_name, ENT_QUOTES, 'UTF-8') ?></td>
+      <td><?= isset($options_cost[$index]) ? htmlspecialchars($options_cost[$index], ENT_QUOTES, 'UTF-8') . '円' : '-' ?></td>
     </tr>
+    <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if (!empty($cost['coupon_discount'])): ?>
     <tr>
-      <td>ポイント</td>
-      <td>3,000円</td>
+      <td>クーポン割引</td>
+      <td>-<?= htmlspecialchars($cost['coupon_discount'], ENT_QUOTES, 'UTF-8') ?>円</td>
     </tr>
+    <?php endif; ?>
+    <?php if (!empty($cost['use_point'])): ?>
+    <tr>
+      <td>ポイント割引</td>
+      <td>-<?= htmlspecialchars($cost['use_point'], ENT_QUOTES, 'UTF-8') ?>円</td>
+    </tr>
+    <?php endif; ?>
 
 
     <tr>
       <td><strong>合計</strong></td>
-      <td><strong>15,000円</strong></td>
+      <td><strong><?= htmlspecialchars($cost['total_amount'], ENT_QUOTES, 'UTF-8') ?>円</strong></td>
     </tr>
   </tbody>
 </table>
+
+<!-- 予約送信フォーム -->
+<form id="reserveForm" method="post">
+    <!-- 必要なデータを hidden で送る -->
+    <input type="hidden" name="pay" value="<?= htmlspecialchars($pay) ?>">
+    <input type="hidden" name="c_name" value="<?= htmlspecialchars($c_name) ?>">
+    <input type="hidden" name="date" value="<?= htmlspecialchars($date) ?>">
+    <input type="hidden" name="in_time" value="<?= htmlspecialchars($in_time->format('Y-m-d H:i:s')) ?>">
+    <input type="hidden" name="out_time" value="<?= htmlspecialchars($out_time->format('Y-m-d H:i:s')) ?>">
+    <input type="hidden" name="start_time" value="<?= htmlspecialchars($start_time->format('Y-m-d H:i:s')) ?>">
+    <input type="hidden" name="end_time" value="<?= htmlspecialchars($end_time->format('Y-m-d H:i:s')) ?>">
+    <input type="hidden" name="g_name" value="<?= htmlspecialchars($g_name) ?>">
+    <input type="hidden" name="contact_tel" value="<?= htmlspecialchars($tel) ?>">
+    <input type="hidden" name="tel" value="<?= htmlspecialchars($user_tel) ?>">
+    <input type="hidden" name="options" value="<?= htmlspecialchars(json_encode($options, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="place" value="<?= htmlspecialchars($place) ?>">
+    <input type="hidden" name="place_comment" value="<?= htmlspecialchars($place_comment) ?>">
+    <input type="hidden" name="area" value="<?= htmlspecialchars($area) ?>">
+    <input type="hidden" name="area_comment" value="<?= htmlspecialchars($area_comment) ?>">
+    <input type="hidden" name="comment" value="<?= htmlspecialchars($comment) ?>">
+    <input type="hidden" name="cost_uchiwake" value="<?= htmlspecialchars(json_encode($cost)) ?>">
+    <input type="hidden" name="g_login_id" value="<?= htmlspecialchars($g_login_id) ?>">
+    <input type="hidden" name="login_id" value="<?= htmlspecialchars($login_id) ?>">
+    <input type="hidden" name="user_name" value="<?= htmlspecialchars($user_name) ?>">
+    <input type="hidden" name="coupon" value="<?= htmlspecialchars($coupon) ?>">
+    <input type="hidden" name="point" value="<?= htmlspecialchars($point) ?>">
+    <input type="hidden" name="course_time" value="<?= htmlspecialchars($course_time) ?>">
+    <input type="hidden" name="cost" value="<?= htmlspecialchars($cost['total_amount']) ?>">
+
+
+    <div class="mb-3 text-center">
+        <button type="button" class="btn btn-primary btn-lg" onclick="submitReservation()">
+            SMS認証へ
+        </button>
+    </div>
+</form>
+    <!-- 戻る -->
+    <a type="button" class="btn btn-back" href="reserve.php">戻る</a>
+
 <?php include 'footer.php'; ?>
 <script src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
+
+<script>
+const payMethod = <?= json_encode($pay) ?>;
+
+function submitReservation() {
+    const form = document.getElementById('reserveForm');
+
+    
+    form.action = 'reserve_sms.php'; // 現金
+    
+
+    form.submit();
+}
+</script>
