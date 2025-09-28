@@ -44,6 +44,7 @@ try {
     $stmt->execute();
     $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    
     // 30分刻みのスロット生成
     $slotStart = new DateTime($date . ' 17:00');
     $slotEnd = new DateTime($date . ' 03:00');
@@ -107,6 +108,7 @@ try {
     }
 
     echo json_encode($availability);
+    
 
 } catch (Exception $e) {
     echo json_encode([]);

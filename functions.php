@@ -186,3 +186,36 @@ function getBaseDate(?DateTime $now = null): string {
 
 
 
+/**
+ * 基準日を取得する関数
+ * 営業日は前日17:00から当日6:00まで
+ * 例：9/29 17:00 ～ 9/30 06:00 → 基準日は9/29
+ */
+function get_BaseDate($datetime = null) {
+    // 引数がない場合は現在時刻を使用
+    if ($datetime === null) {
+        $datetime = new DateTime();
+    } elseif (is_string($datetime)) {
+        $datetime = new DateTime($datetime);
+    }
+    
+    $hour = (int)$datetime->format('H');
+    
+    // 6:00未満（深夜～早朝）の場合は前日が基準日
+    if ($hour < 6) {
+        $baseDate = clone $datetime;
+        $baseDate->modify('-1 day');
+        return $baseDate->format('Y-m-d');
+    } else {
+        // 6:00以降は当日が基準日
+        return $datetime->format('Y-m-d');
+    }
+}
+
+/**
+ * 指定した予約時間から基準日を取得
+ */
+function get_BaseDateFromReservation($reservationDateTime) {
+    $dt = new DateTime($reservationDateTime);
+    return get_BaseDate($dt);
+}

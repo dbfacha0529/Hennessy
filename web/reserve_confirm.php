@@ -25,38 +25,22 @@ $course_time = $stmt->fetchColumn(); // fetchColumn() で time の値だけ取�
         }
     }
 
-$orig_date = $_SESSION["RESERVE_DATA"]['reserve_date']; // DATE型の文字列
-
-    // 時間の時だけを取得
-    list($hour, $minute) = explode(':', $_SESSION["RESERVE_DATA"]['reserve_time']);
-    $hour = (int)$hour;
-
-    // DateTimeオブジェクト作成
-    $dateObj = new DateTime($orig_date);
-
-    // 00:00〜05:59なら前日にする
-    if ($hour >= 0 && $hour <= 5) {
-        $dateObj->modify('-1 day');
-    }
-
-    // $date に調整後の日付を格納
-$date = $dateObj->format('Y-m-d');
+$date = $_SESSION["RESERVE_DATA"]['reserve_date']; // DATE型の文字列
 
 
-    $dates = $_SESSION["RESERVE_DATA"]['reserve_date'];   // 例: "2025-09-23"
-    $time = $_SESSION["RESERVE_DATA"]['reserve_time'];   // 例: "14:30:00"
 
     // DATE と TIME を結合して DateTime オブジェクトを作成
-$in_time = new DateTime($dates . ' ' . $time);
+$in_times = new DateTime($_SESSION["RESERVE_DATA"]['reserve_times']);
+$in_time  =$_SESSION["RESERVE_DATA"]['reserve_times'];
 
 
-$out_time = clone $in_time; // 元の日時を保持するためクローン
+  $out_time = clone $in_times; // 元の日時を保持するためクローン
 $out_time->add(new DateInterval('PT' . $course_time . 'M'));
 
-$end_time = clone $in_time; // 元の日時を保持するためクローン
-$end_time->add(new DateInterval('PT10M'));
+$end_time = clone $out_time; // 終了時刻をベースにする
+$end_time->add(new DateInterval('PT10M')); // 後処理10分を追加
 
-$start_time = clone $in_time; // 元の日時を保持するためクローン
+$start_time = clone $in_times; // 元の日時を保持するためクローン
 $start_time->sub(new DateInterval('PT10M')); // 10分引く
 
 $g_name = $_SESSION["RESERVE_DATA"]['girl_name'];
@@ -106,13 +90,15 @@ $done = $_SESSION["RESERVE_DATA"][''];
 $cost = $_SESSION["RESERVE_DATA"]['pricing']; 
 
 
-$dt = new DateTime($orig_date);  // DATE型からDateTimeに変換
+$dt = clone $start_time;  
+
     $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
-$orig_date_fmt = $dt->format('Y年n月j日（') 
+
+$date_fmt = $dt->format('Y年n月j日（') 
                  . $weekdays[$dt->format('w')] 
                  . '）';
-$in_time_fmt = $in_time->format('H時i分'); // 文字列に変換
+$in_time_fmt = $in_times->format('H時i分'); // 文字列に変換
 $out_time_fmt = $out_time->format('H時i分'); // 文字列に変換
 $total_cost = $cost['total_amount'];
 $pay_label = '';
@@ -159,7 +145,7 @@ $options_cost = [];
     </tr>
     <tr>
       <td>ご予約日</td>
-      <td><?= htmlspecialchars($orig_date_fmt, ENT_QUOTES, 'UTF-8') ?></td>
+      <td><?= htmlspecialchars($date_fmt, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
     <tr>
       <td>ご予約時間</td>
@@ -291,7 +277,7 @@ $options_cost = [];
     <input type="hidden" name="pay" value="<?= htmlspecialchars($pay) ?>">
     <input type="hidden" name="c_name" value="<?= htmlspecialchars($c_name) ?>">
     <input type="hidden" name="date" value="<?= htmlspecialchars($date) ?>">
-    <input type="hidden" name="in_time" value="<?= htmlspecialchars($in_time->format('Y-m-d H:i:s')) ?>">
+    <input type="hidden" name="in_time" value="<?= htmlspecialchars($in_times->format('Y-m-d H:i:s')) ?>">
     <input type="hidden" name="out_time" value="<?= htmlspecialchars($out_time->format('Y-m-d H:i:s')) ?>">
     <input type="hidden" name="start_time" value="<?= htmlspecialchars($start_time->format('Y-m-d H:i:s')) ?>">
     <input type="hidden" name="end_time" value="<?= htmlspecialchars($end_time->format('Y-m-d H:i:s')) ?>">
@@ -312,6 +298,7 @@ $options_cost = [];
     <input type="hidden" name="point" value="<?= htmlspecialchars($point) ?>">
     <input type="hidden" name="course_time" value="<?= htmlspecialchars($course_time) ?>">
     <input type="hidden" name="cost" value="<?= htmlspecialchars($cost['total_amount']) ?>">
+    
 
 
     <div class="mb-3 text-center">

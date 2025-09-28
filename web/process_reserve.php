@@ -16,8 +16,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // POSTデータ取得
     $girl_name = trim($_POST['girl_name'] ?? '');
     $course_name = trim($_POST['course_name'] ?? '');
-    $reserve_date = trim($_POST['reserve_date'] ?? '');
-    $reserve_time = trim($_POST['reserve_time'] ?? '');
+    $reserve_date=new DateTime($_POST['reserve_date']);
+    $reserve_dates =$_POST['reserve_date'];
+   // $reserve_date = clone $reserve_date_k;
+
+
+    $reserve_stime = trim($_POST['reserve_time'] ?? '');
+        
+
+        // 時間と分を取得
+        list($hour, $minute) = explode(':', $reserve_stime);
+
+        $hour   = (int)$hour;
+        $minute = (int)$minute;
+
+        // DateTime 作成（date 部分をセット）
+        $reserveDateTime = clone $reserve_date; 
+
+        // time 部分をセット
+        $reserveDateTime->setTime($hour, $minute, 0);
+
+        // 00:00～08:00なら翌日にする
+        if ((int)$hour >= 0 && (int)$hour < 8) {
+            $reserveDateTime->modify('+1 day');
+        }
+
+        // DATETIME 形式文字列に変換
+    $reserve_time = $reserveDateTime->format('Y-m-d H:i:s');
+
     $place = trim($_POST['place'] ?? '');
     $place_other = trim($_POST['place_other'] ?? '');
     $area = trim($_POST['area'] ?? '');
@@ -70,11 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // 3. 日付チェック
-    if (empty($reserve_date)) {
+    if (empty($reserve_dates)) {
         $err['date'][] = '日付を選択してください';
     } else {
-        $dateObj = DateTime::createFromFormat('Y-m-d', $reserve_date);
-        if (!$dateObj || $dateObj->format('Y-m-d') !== $reserve_date) {
+        $dateObj = new DateTime($reserve_dates);
+        if (!$dateObj || $dateObj->format('Y-m-d') !== $reserve_dates) {
             $err['date'][] = '日付の形式が正しくありません';
         } else {
             $today = new DateTime();
@@ -85,10 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // 4. 時間チェック
-    if (empty($reserve_time)) {
+    if (empty($reserve_stime)) {
         $err['time'][] = '時間を選択してください';
     } else {
-        if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $reserve_time)) {
+        if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $reserve_stime)) {
             $err['time'][] = '時間の形式が正しくありません';
         }
     }
@@ -206,12 +232,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 12. 予約重複チェック（エラーがここまでない場合のみ）
     if (empty($err)) {
         // 時間重複チェック用の開始・終了時間計算
-        $startDateTime = new DateTime($reserve_date . ' ' . $reserve_time);
+        $startDateTime = clone $reserveDateTime;
         $courseTime = (int)$courseInfo['time']; // 分
         $totalTime = $courseTime + 20; // 前後10分ずつ
         $endDateTime = clone $startDateTime;
         $endDateTime->modify("+{$totalTime} minutes");
-        
+        $endDateTime->modify("+10 minutes");
+        $startDateTime->modify("-10 minutes");
+      
         if (!empty($girl_name)) {
             // 特定の女の子の予約重複チェック
             $sql = "SELECT COUNT(*) FROM reserve 
@@ -220,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     AND NOT (end_time <= :start_time OR start_time >= :end_time)";
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':g_login_id', $reserveData['girl_info']['g_login_id'], PDO::PARAM_STR);
-            $stmt->bindValue(':date', $reserve_date, PDO::PARAM_STR);
+            $stmt->bindValue(':date', $reserve_dates, PDO::PARAM_STR);
             $stmt->bindValue(':start_time', $startDateTime->format('H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_time', $endDateTime->format('H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
@@ -235,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "SELECT * FROM shift WHERE g_login_id = :g_login_id AND date = :date";
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':g_login_id', $reserveData['girl_info']['g_login_id'], PDO::PARAM_STR);
-            $stmt->bindValue(':date', $reserve_date, PDO::PARAM_STR);
+            $stmt->bindValue(':date', $reserve_dates, PDO::PARAM_STR);
             $stmt->execute();
             $shiftInfo = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -247,10 +275,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 準備時間考慮
                 $requiredStart = clone $startDateTime;
-                $requiredStart->modify('-10 minutes');
+                
                 
                 if ($requiredStart < $shiftStart || ($shiftInfo['LO'] == 0 && $endDateTime > $shiftEnd)) {
                     $err['time'][] = '指定された時間は選択できません';
+                    
                 }
             }
         }
@@ -258,6 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reserveData['start_time'] = $startDateTime;
         $reserveData['end_time'] = $endDateTime;
     }
+   
     
     // バリデーション結果に応じて処理分岐
     if (empty($err)) {
@@ -304,8 +334,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['RESERVE_DATA'] = [
             'girl_name' => $girl_name,
             'course_name' => $course_name,
-            'reserve_date' => $reserve_date,
-            'reserve_time' => $reserve_time,
+            'reserve_date' => $reserve_dates,
+            'reserve_times' => $reserve_time,
             'place' => $place,
             'place_other' => $place_other,
             'area' => $area,

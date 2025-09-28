@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . '/functions.php');
 $pdo = dbConnect();
 
 // 基準日
-$date = "2025-09-29";
+$date = get_BaseDate(); 
 
 // コース時間と準備時間込みの実際時間（分）
 $courses = [60, 90, 120, 150, 180];

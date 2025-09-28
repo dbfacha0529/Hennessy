@@ -105,6 +105,11 @@ function getAllOptions($pdo) {
 
 <?php if (!empty($err)): ?>
   <div class="alert alert-danger">
+      <?php if (!empty($err['touroku'])): ?>
+    <?php foreach ($err['touroku'] as $msg): ?>
+      <p class="error text-danger"><?= htmlspecialchars($msg) ?></p>
+    <?php endforeach; ?>
+  <?php endif; ?>
     入力内容に誤りがあります。各項目をご確認ください。
   </div>
 <?php endif; ?>
