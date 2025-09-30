@@ -1,0 +1,118 @@
+.page-title {
+    text-align: center;
+    margin: 30px 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.gcard {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.gcard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    color: #ccc;
+}
+
+.favorite-btn.active {
+    color: #ff6b6b;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 1);
+}
+
+.gcardimg {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.gcard-textarea {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.left-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.headcomment {
+    font-size: 14px;
+    color: #666;
+}
+
+.out_time {
+    font-size: 14px;
+    color: #999;
+    white-space: nowrap;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-message p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .favorites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .gcardimg {
+        height: 250px;
+    }
+}
+
+.gcard {
+    cursor: pointer;
+}

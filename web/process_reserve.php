@@ -120,51 +120,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // 5. place（形態）チェック
-    if (empty($place)) {
-        $err['place'][] = '形態を選択してください';
+if (empty($place)) {
+    $err['place'][] = '形態を選択してください';
+} else {
+    if ($place === 'その他' && empty($place_other)) {
+        $err['place'][] = 'その他を選択した場合は詳細を入力してください';
     } else {
-        if ($place === 'その他' && empty($place_other)) {
-            $err['place'][] = 'その他を選択した場合は詳細を入力してください';
-        } else {
-            // placeがDBに存在するかチェック
-            if ($place !== 'その他') {
-                $sql = "SELECT COUNT(*) FROM place WHERE place_name = :place_name";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindValue(':place_name', $place, PDO::PARAM_STR);
-                $stmt->execute();
-                if ($stmt->fetchColumn() == 0) {
-                    $err['place'][] = '選択された形態が無効です';
-                }
+        // placeがDBに存在するかチェック
+        if ($place !== 'その他') {
+            $sql = "SELECT COUNT(*) FROM place WHERE place_name = :place_name";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':place_name', $place, PDO::PARAM_STR);
+            $stmt->execute();
+            if ($stmt->fetchColumn() == 0) {
+                $err['place'][] = '選択された形態が無効です';
             }
         }
-    }
-        if (!empty($place_other) && mb_strlen($place_other) > 300) {
-        $err['place'][] = '300文字以内でご記入ください';
-    }
-    // 6. area（エリア）チェック
-    if (empty($area)) {
-        $err['area'][] = 'エリアを選択してください';
-    } else {
-        if ($area === 'その他' && empty($area_other)) {
-            $err['area'][] = 'その他を選択した場合はエリア詳細を入力してください';
-        } else {
-            // areaがDBに存在するかチェック
-            if ($area !== 'その他') {
-                $sql = "SELECT COUNT(*) FROM area WHERE area_name = :area_name";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindValue(':area_name', $area, PDO::PARAM_STR);
-                $stmt->execute();
-                if ($stmt->fetchColumn() == 0) {
-                    $err['area'][] = '選択されたエリアが無効です';
-                }
-            }
-        }
-    }
-        // ★ area_other の文字数チェック
-    if (!empty($area_other) && mb_strlen($area_other) > 300) {
-        $err['area'][] = '300文字以内でご記入ください';
     }
     
+    // ★ ご自宅選択時の特別バリデーション
+    if ($place === 'ご自宅') {
+        if ($area !== 'その他') {
+            $err['area'][] = 'ご自宅の場合はエリアをその他にしてください';
+        }
+        if (empty($area_other)) {
+            $err['area'][] = '住所を記入してください';
+        }
+    }
+}
+if (!empty($place_other) && mb_strlen($place_other) > 300) {
+    $err['place'][] = '300文字以内でご記入ください';
+}
+
+// 6. area（エリア）チェック
+if (empty($area)) {
+    $err['area'][] = 'エリアを選択してください';
+} else {
+    if ($area === 'その他' && $place !== 'ご自宅' && empty($area_other)) {
+        $err['area'][] = 'その他を選択した場合はエリア詳細を入力してください';
+    } else {
+        // areaがDBに存在するかチェック
+        if ($area !== 'その他') {
+            $sql = "SELECT COUNT(*) FROM area WHERE area_name = :area_name";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':area_name', $area, PDO::PARAM_STR);
+            $stmt->execute();
+            if ($stmt->fetchColumn() == 0) {
+                $err['area'][] = '選択されたエリアが無効です';
+            }
+        }
+    }
+}
+// ★ area_other の文字数チェック
+if (!empty($area_other) && mb_strlen($area_other) > 300) {
+    $err['area'][] = '300文字以内でご記入ください';
+}
     // 7. オプションチェック（女の子が選択されている場合のみ）
     if (!empty($girl_name) && !empty($options)) {
         // 女の子のオプション取得
@@ -275,7 +285,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 準備時間考慮
                 $requiredStart = clone $startDateTime;
-                
+                $shiftStart->modify('-10 minutes');
+
                 
                 if ($requiredStart < $shiftStart || ($shiftInfo['LO'] == 0 && $endDateTime > $shiftEnd)) {
                     $err['time'][] = '指定された時間は選択できません';
@@ -292,19 +303,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // バリデーション結果に応じて処理分岐
     if (empty($err)) {
         // 料金計算
-        $courseCost = (int)$courseInfo['cost'];
-        $nominationFee = ((int)$courseInfo['free_check'] === 0) ? 2000 : 0;
-        
-        // 派遣料・タオル代
-        $hakenFee = 0;
-        $towelFee = 0;
-        if ($place === 'ご自宅') {
-            $hakenFee = 1000;
-            $towelFee = 1000;
-        } elseif ($place === 'ビジネスホテル') {
-            $hakenFee = 1000;
-            $towelFee = 0;
-        }
+$courseCost = (int)$courseInfo['cost'];
+$nominationFee = ((int)$courseInfo['free_check'] === 0) ? 2000 : 0;
+
+// 派遣料・タオル代（修正版：DBから取得）
+$hakenFee = 0;
+$towelFee = 0;
+$sql = "SELECT haken_fee, towel_fee FROM place_fees WHERE place_name = :place_name";
+$stmt = $pdo->prepare($sql);
+$stmt->bindValue(':place_name', $place, PDO::PARAM_STR);
+$stmt->execute();
+$placeFeeData = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($placeFeeData) {
+    $hakenFee = (int)$placeFeeData['haken_fee'];
+    $towelFee = (int)$placeFeeData['towel_fee'];
+}
         
         // オプション料金
         $optionsCost = 0;

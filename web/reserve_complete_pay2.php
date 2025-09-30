@@ -10,10 +10,10 @@ if (!isset($_SESSION['USER']['tel'])) {
 $pdo = dbConnect();
 $tel = $_SESSION['USER']['tel'];
 
-// 最新の予約を取得（現金決済のもの）
+// 最新の予約を取得（クレジット決済のもの）
 $stmt = $pdo->prepare("
     SELECT * FROM reserve 
-    WHERE tel = :tel AND pay = 1 
+    WHERE tel = :tel AND pay = 2 
     ORDER BY created_at DESC 
     LIMIT 1
 ");
@@ -23,6 +23,14 @@ $reservation = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$reservation) {
     header('Location: home.php');
     exit;
+}
+
+// pay_doneを1に更新（決済完了）
+try {
+    $updateStmt = $pdo->prepare("UPDATE reserve SET pay_done = 1 WHERE id = :id");
+    $updateStmt->execute([':id' => $reservation['id']]);
+} catch (Exception $e) {
+    error_log("pay_done update error: " . $e->getMessage());
 }
 
 // 予約データの整理
@@ -61,7 +69,7 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
             <i class="bi bi-check-circle-fill"></i>
         </div>
         <h1>ご予約が完了しました</h1>
-        <p class="sub-message">お決まりになりましたら、予約リストからホテル名と部屋番号をご登録ください。</p>
+        <p class="sub-message">決済が完了いたしました。<br>お決まりになりましたら、予約リストからホテル名と部屋番号をご登録ください。</p>
     </div>
 
     <!-- 予約内容テーブル -->
@@ -80,7 +88,7 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
                 <td class="label">コース</td>
                 <td><?= htmlspecialchars($c_name) ?></td>
             </tr>
-            <?php if ($isFreeCheck === 0 && !empty($g_name)): ?>
+            <?php if (!empty($g_name)): ?>
             <tr>
                 <td class="label">ご指名</td>
                 <td><?= htmlspecialchars($g_name) ?></td>
@@ -112,7 +120,7 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
             <?php endif; ?>
             <tr>
                 <td class="label">お支払方法</td>
-                <td>現金</td>
+                <td>クレジットカード（決済完了）</td>
             </tr>
             <tr>
                 <td class="label">ご連絡先</td>
@@ -182,12 +190,12 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
                 <?php endif; ?>
                 
                 <tr class="total-row">
-                    <td><strong>合計金額</strong></td>
+                    <td><strong>決済完了金額</strong></td>
                     <td class="amount"><strong><?= number_format($total_cost) ?>円</strong></td>
                 </tr>
             <?php else: ?>
                 <tr class="total-row">
-                    <td><strong>合計金額</strong></td>
+                    <td><strong>決済完了金額</strong></td>
                     <td class="amount"><strong><?= number_format($total_cost) ?>円</strong></td>
                 </tr>
             <?php endif; ?>

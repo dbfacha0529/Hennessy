@@ -92,6 +92,17 @@ try {
         }
     }
 
+    // === 最終重複チェック ===
+    if (!checkFinalReservationConflict($pdo, $data)) {
+        error_log("Final conflict check FAILED");
+        $pdo->rollBack();
+        $_SESSION['RESERVE_ERRORS']['touroku'][] = '申し訳ございません。選択された時間は既に予約済みです。お時間を変更してお試しください。';
+        header("Location: reserve.php");
+        exit;
+    }
+    
+    error_log("Final conflict check PASSED");
+
     // 予約登録
     $sql = "INSERT INTO reserve (
         pay, c_name, date, in_time, out_time, start_time, end_time, g_name, contact_tel, tel,

@@ -11,6 +11,18 @@ unset($_SESSION['RESERVE_ERRORS'], $_SESSION['RESERVE_INPUT']);
 $pdo = dbConnect();
 $k_checkgirls = k_checkgirls($pdo);
 
+// place料金データ取得
+function getPlaceFees($pdo) {
+    $stmt = $pdo->query("SELECT place_name, haken_fee, towel_fee FROM place_fees");
+    $data = [];
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+        $data[$row['place_name']] = [
+            'haken_fee' => (int)$row['haken_fee'],
+            'towel_fee' => (int)$row['towel_fee']
+        ];
+    }
+    return $data;
+}
 
 // 基準日を取得（明朝6時切り替え）
 $baseDate = getBaseDate();
@@ -403,8 +415,11 @@ function getAllOptions($pdo) {
   </button>
 </div>
 
-
 <script>
+const courseData = <?= json_encode(getCourseData($pdo)) ?>; 
+const optionsData = <?= json_encode(getAllOptions($pdo)) ?>;
+const placeFeesData = <?= json_encode(getPlaceFees($pdo)) ?>; // ★ 追加
+
 // PHPから復元値を渡す
 const oldData = <?= json_encode($old) ?>;
 
@@ -609,8 +624,7 @@ let couponDiscount = 0;   // クーポン割引
 let usePoint = 0;         // 入力されたポイント利用（エラーなければ）
 let totalAmount = 0;      // 総額
 
-const courseData = <?= json_encode(getCourseData($pdo)) ?>; 
-const optionsData = <?= json_encode(getAllOptions($pdo)) ?>;
+
 
 // DOM
 const girlSelect = document.getElementById('girl-select');
@@ -690,13 +704,10 @@ function updateTotalAmount() {
     `;
 }
 
-
 // エリア選択時に料金更新（修正版）
 areaSelect.addEventListener('change', () => {
     updateTotalAmount(); // 総額更新関数呼び出し
 });
-
-
 
 // コース選択時に料金更新（修正版）
 courseSelect.addEventListener('change', () => {
@@ -712,21 +723,17 @@ courseSelect.addEventListener('change', () => {
     updateTotalAmount(); // 総額更新関数呼び出し
 });
 
+
 // place選択時に料金更新（修正版）
 function updatePlaceFees() {
     const selectedPlace = placeSelect.value;
     hakenFee = 0;
     towelFee = 0;
 
-    if(selectedPlace === 'ご自宅') {
-        hakenFee = 1000;
-        towelFee = 1000;
-    } else if(selectedPlace === 'ビジネスホテル') {
-        hakenFee = 1000;
-        towelFee = 0;
-    } else if(selectedPlace === 'ラブホテル') {
-        hakenFee = 0;
-        towelFee = 0;
+    // DBから取得した料金データを使用
+    if (placeFeesData[selectedPlace]) {
+        hakenFee = placeFeesData[selectedPlace].haken_fee || 0;
+        towelFee = placeFeesData[selectedPlace].towel_fee || 0;
     }
 
     updateTotalAmount();
@@ -800,8 +807,6 @@ function updateCouponDiscount() {
         });
 }
 
-
-
 // ポイント入力処理（修正版）
 usePointInput.addEventListener('input', () => {
     const entered = parseInt(usePointInput.value, 10) || 0;
@@ -837,7 +842,94 @@ function resetGirlSelection(){
     reserve_option=[];
 }
 
-// スケジュール表示
+// フリーコース用のオプション表示関数
+function updateFreeOptions() {
+    const dateVal = dateSelect.value;
+    const timeVal = timeSelect.value;
+    const courseVal = courseSelect.value;
+    
+    if (!dateVal || !timeVal || !courseVal) {
+        return;
+    }
+    
+    // コース情報を取得してフリーコースかチェック
+    const courseInfo = courseData[courseVal];
+    if (!courseInfo || parseInt(courseInfo.free_check) !== 1) {
+        return; // フリーコースでない場合は何もしない
+    }
+    
+    // 時間情報を構築（日跨ぎを考慮）
+    let startTime;
+    const [hours, minutes] = timeVal.split(':');
+    const hour = parseInt(hours);
+    
+    if (hour < 6) {
+        // 00:00-05:59は翌日扱い
+        const nextDay = new Date(dateVal);
+        nextDay.setDate(nextDay.getDate() + 1);
+        startTime = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')} ${timeVal}:00`;
+    } else {
+        // 06:00以降は当日扱い
+        startTime = `${dateVal} ${timeVal}:00`;
+    }
+    
+    const courseMinutes = parseInt(courseInfo.time) || 60;
+    const endTime = new Date(new Date(startTime).getTime() + courseMinutes * 60000);
+    const endTimeStr = endTime.toISOString().slice(0, 19).replace('T', ' ');
+    
+    // オプション取得
+    fetch(`get_free_options.php?date=${encodeURIComponent(dateVal)}&start_time=${encodeURIComponent(startTime)}&end_time=${encodeURIComponent(endTimeStr)}&course_time=${courseMinutes}`)
+        .then(res => res.json())
+        .then(options => {
+            displayFreeOptions(options);
+        })
+        .catch(err => {
+            console.error('Free options fetch error:', err);
+            displayFreeOptions([]);
+        });
+}
+
+// フリーコース用オプション表示
+function displayFreeOptions(options) {
+    optionsList.innerHTML = '';
+    reserve_option = []; // リセット
+    
+    if (options.length === 0) {
+        optionsWrapper.style.display = 'none';
+        return;
+    }
+    
+    optionsWrapper.style.display = 'block';
+    
+    options.forEach((option, index) => {
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        
+        const input = document.createElement('input');
+        input.className = 'form-check-input';
+        input.type = 'checkbox';
+        input.id = `free-opt-${index}`;
+        input.value = option;
+        input.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                reserve_option.push(e.target.value);
+            } else {
+                reserve_option = reserve_option.filter(v => v !== e.target.value);
+            }
+            updateOptionsCost();
+        });
+        
+        const label = document.createElement('label');
+        label.className = 'form-check-label';
+        label.htmlFor = `free-opt-${index}`;
+        label.textContent = option;
+        
+        div.appendChild(input);
+        div.appendChild(label);
+        optionsList.appendChild(div);
+    });
+}
+
 // スケジュール表示（修正版）
 function updateSchedule(){
     const g_name = girlSelect.value;
@@ -854,58 +946,59 @@ function updateSchedule(){
     const courseInfo = courseData[c_name];
     const isFreeCheck = courseInfo && parseInt(courseInfo.free_check) === 1;
 
-if (isFreeCheck) {
-    fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
-    .then(res => res.json())
-    .then(data => {
-        resetSchedule();
-        const times = Object.keys(data);
+    if (isFreeCheck) {
+        fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
+        .then(res => res.json())
+        .then(data => {
+            resetSchedule();
+            const times = Object.keys(data);
 
-        // ヘッダー行作成
-        let header = '<th>時間</th>';
-        times.forEach(t => header += '<th>' + t + '</th>');
-        scheduleHeader.innerHTML = header;
+            // ヘッダー行作成
+            let header = '<th>時間</th>';
+            times.forEach(t => header += '<th>' + t + '</th>');
+            scheduleHeader.innerHTML = header;
 
-        // データ行作成
-        const tr = document.createElement('tr');
-        const tdLabel = document.createElement('td');
-        tdLabel.textContent = 'フリー';
-        tr.appendChild(tdLabel);
+            // データ行作成
+            const tr = document.createElement('tr');
+            const tdLabel = document.createElement('td');
+            tdLabel.textContent = 'フリー';
+            tr.appendChild(tdLabel);
 
-        times.forEach(t => {
-            const td = document.createElement('td');
-            td.textContent = data[t]; // ← ここは必ず t
-            if(data[t] === '〇') {
-                td.style.cursor = 'pointer';
-                td.style.color = 'green';
-                const timeValue = t; // 安全にクロージャ内で保持
-                td.addEventListener('click', () => {
-                   timeSelect.value = timeValue; // ← t を直接使わず timeValue
-                });
-            } else if(data[t] === '✖') {
-                td.style.color = 'red';
-            }
-            tr.appendChild(td);
+            times.forEach(t => {
+                const td = document.createElement('td');
+                td.textContent = data[t];
+                if(data[t] === '〇') {
+                    td.style.cursor = 'pointer';
+                    td.style.color = 'green';
+                    const timeValue = t;
+                    td.addEventListener('click', () => {
+                       timeSelect.value = timeValue;
+                       // 時間選択時にオプションを更新
+                       updateFreeOptions();
+                    });
+                } else if(data[t] === '✖') {
+                    td.style.color = 'red';
+                }
+                tr.appendChild(td);
+            });
+
+            scheduleBody.appendChild(tr);
+
+            // 予約可能時間をプルダウンにセット
+            const availableTimes = times.filter(t => data[t] === '〇');
+            timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
+            availableTimes.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t;
+                option.textContent = t;
+                timeSelect.appendChild(option);
+            });
+        })
+        .catch(err => {
+            console.error('Free schedule fetch error:', err);
+            resetSchedule();
         });
-
-        scheduleBody.appendChild(tr);
-
-        // 予約可能時間をプルダウンにセット
-        const availableTimes = times.filter(t => data[t] === '〇');
-        timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
-        availableTimes.forEach(t => {
-            const option = document.createElement('option');
-            option.value = t;
-            option.textContent = t;
-            timeSelect.appendChild(option);
-        });
-    })
-    .catch(err => {
-        console.error('Free schedule fetch error:', err);
-        resetSchedule();
-    });
-}
- else {
+    } else {
         // 既存の処理（女の子指定あり）
         if (!g_name) {
             resetSchedule();
@@ -942,16 +1035,15 @@ if (isFreeCheck) {
             });
             scheduleBody.appendChild(tr);
 
-            // 既存の times.forEach(...) の処理が終わった後に追加
-// 予約可能時間（〇の時間だけ）をプルダウンにセット
-const availableTimes = times.filter(t => data[t] === '〇');
-timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
-availableTimes.forEach(t => {
-    const option = document.createElement('option');
-    option.value = t;
-    option.textContent = t;
-    timeSelect.appendChild(option);
-});
+            // 予約可能時間をプルダウンにセット
+            const availableTimes = times.filter(t => data[t] === '〇');
+            timeSelect.innerHTML = '<option value="">-- 選択してください --</option>';
+            availableTimes.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t;
+                option.textContent = t;
+                timeSelect.appendChild(option);
+            });
 
         })
         .catch(err => {
@@ -981,7 +1073,7 @@ function loadGirlOptions(gid){
                 input.addEventListener('change', (e)=>{
                     if(e.target.checked) reserve_option.push(e.target.value);
                     else reserve_option = reserve_option.filter(v=>v!==e.target.value);
-                    updateOptionsCost(); // ← ここで総額更新
+                    updateOptionsCost();
                 });
                 const label = document.createElement('label');
                 label.className='form-check-label';
@@ -995,7 +1087,7 @@ function loadGirlOptions(gid){
             optionsWrapper.style.display='none';
             optionsList.innerHTML='';
             reserve_option=[];
-            updateOptionsCost(); // オプションリセット時も総額更新
+            updateOptionsCost();
         }
     });
 }
@@ -1026,7 +1118,6 @@ girlSelect.addEventListener('change', ()=>{
     });
 });
 
-// コース選択
 // コース選択（修正版）
 courseSelect.addEventListener('change', function(){
     const c_name = this.value;
@@ -1061,8 +1152,64 @@ courseSelect.addEventListener('change', function(){
 // 日付変更
 dateSelect.addEventListener('change', updateSchedule);
 
+// 時間選択のイベントリスナー追加
+timeSelect.addEventListener('change', () => {
+    const courseVal = courseSelect.value;
+    if (courseVal) {
+        const courseInfo = courseData[courseVal];
+        if (courseInfo && parseInt(courseInfo.free_check) === 1) {
+            updateFreeOptions();
+        }
+    }
+});
+
 // place「その他」
-placeSelect.addEventListener('change', ()=>{ otherPlaceWrapper.style.display = placeSelect.value==='その他'?'block':'none'; });
+placeSelect.addEventListener('change', ()=> { 
+    const placeVal = placeSelect.value;
+    
+    // その他の場合
+    otherPlaceWrapper.style.display = placeVal === 'その他' ? 'block' : 'none';
+    
+    // ★ ご自宅の場合の処理
+    if (placeVal === 'ご自宅') {
+        // エリアを「その他」に設定
+        areaSelect.value = 'その他';
+        areaSelect.disabled = true;
+        
+        // その他エリアを表示
+        otherAreaWrapper.style.display = 'block';
+        
+        // 赤文字メッセージを追加（既存がなければ）
+        if (!document.getElementById('address-notice')) {
+            const notice = document.createElement('div');
+            notice.id = 'address-notice';
+            notice.style.color = 'red';
+            notice.style.marginTop = '5px';
+            notice.style.marginBottom = '5px';
+            notice.textContent = '住所を下記に記入してください';
+            
+            // その他（エリア）ラベルの後に挿入
+            const label = otherAreaWrapper.querySelector('label');
+            label.parentNode.insertBefore(notice, label.nextSibling);
+        }
+    } else {
+        // ご自宅以外の場合は制限解除
+        areaSelect.disabled = false;
+        
+        // 赤文字メッセージを削除
+        const notice = document.getElementById('address-notice');
+        if (notice) {
+            notice.remove();
+        }
+        
+        // エリアがその他でない場合は非表示
+        if (areaSelect.value !== 'その他') {
+            otherAreaWrapper.style.display = 'none';
+        }
+    }
+    
+    updatePlaceFees();
+});
 
 // area「その他」
 areaSelect.addEventListener('change', ()=>{ otherAreaWrapper.style.display = areaSelect.value==='その他'?'block':'none'; });
@@ -1114,7 +1261,6 @@ couponInput.addEventListener('input', ()=>{
     const code = couponInput.value.trim();
     
     if(!code) {
-
         updateTotalAmount();
         return;
     }
@@ -1149,10 +1295,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// 予約送信ボタンとフォーム送信処理を追加
+// 予約送信ボタンとフォーム送信処理
 function submitReservation() {
-
-
     // フォーム作成・送信
     const form = document.createElement('form');
     form.method = 'POST';
@@ -1197,8 +1341,6 @@ function submitReservation() {
     document.body.appendChild(form);
     form.submit();
 }
-
-
 </script>
 
 <?php include 'footer.php'; ?>

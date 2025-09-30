@@ -251,5 +251,48 @@ function selectBestCandidate($candidates) {
     // 3. ランダム選択
     $randomKey = array_rand($leastBusy);
     return $leastBusy[$randomKey];
+
+  }
+/**
+ * 最終予約重複チェック関数
+ */
+function checkFinalReservationConflict($pdo, $reserveData) {
+    $g_login_id = $reserveData[':g_login_id'];
+    $start_time = $reserveData[':start_time'];
+    $end_time = $reserveData[':end_time'];
+    $date = $reserveData[':date'];
+    
+    if (empty($g_login_id) || empty($start_time) || empty($end_time)) {
+        return false; // データ不備は重複とみなす
+    }
+    
+    // 該当女の子の既存予約をチェック
+    $stmt = $pdo->prepare("
+        SELECT start_time, end_time 
+        FROM reserve 
+        WHERE g_login_id = :g_login_id 
+        AND date = :date
+    ");
+    $stmt->execute([
+        ':g_login_id' => $g_login_id,
+        ':date' => $date
+    ]);
+    
+    $existingReservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $newStart = new DateTime($start_time);
+    $newEnd = new DateTime($end_time);
+    
+    foreach ($existingReservations as $existing) {
+        $existingStart = new DateTime($existing['start_time']);
+        $existingEnd = new DateTime($existing['end_time']);
+        
+        // 重複チェック（free_check.phpと同じロジック）
+        if (!($newEnd <= $existingStart || $newStart >= $existingEnd)) {
+            return false; // 重複あり
+        }
+    }
+    
+    return true; // 重複なし
 }
 ?>

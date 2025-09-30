@@ -13,7 +13,7 @@ require_once(dirname(__FILE__) . '/../functions.php');
 
 
 // 取得したい日付
-$target_date = "2025-09-25";
+$target_date = "2025-09-29";
 
 // SQL準備
 $sql = "SELECT id, date, in_time, out_time, g_login_id 
@@ -52,10 +52,7 @@ for ($i = 1; $i <= $count; $i++) {
     }
 }
 
-// 確認用表示
-echo "<pre>";
-print_r($girls_today);
-echo "</pre>";
+
 
 
 
@@ -65,10 +62,10 @@ echo "</pre>";
   <!--オリジナルCSS-->
   <link href="./css/home.css" rel="stylesheet">
 
-  <h1>トップページ</h1>
-  <p>ここにコンテンツ</p>
+  
+  
 <div class="gcard"><!--女の子カード-->
-  <img class="gcardimg" src="../img/こい１a.jpg">
+  <img class="gcardimg" src="../img/<?= htmlspecialchars($girls_today[0]['img']) ?>">
   <div class="gcard-textarea">
     <div class="left-text">
       <span class="name"><?= htmlspecialchars($girls_today[0]['name']) ?></span>
