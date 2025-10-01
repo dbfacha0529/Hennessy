@@ -18,7 +18,7 @@ $stmt->execute();
 $shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 予約取得（すでに前後10分加算済み）
-$sql = "SELECT * FROM reserve WHERE date = :date";
+$sql = "SELECT * FROM reserve WHERE date = :date AND done != 5";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':date', $date, PDO::PARAM_STR);
 $stmt->execute();

@@ -32,7 +32,7 @@ if (!isset($_SESSION['USER']['tel'])) {
         
         .chat-list-header {
             padding: 20px;
-            background-color: #4a90e2;
+            background-color: #00753aff;
             color: white;
             font-size: 20px;
             font-weight: bold;
@@ -239,7 +239,7 @@ html += `
             loadChatList();
         });
     </script>
-    <script src="../web/script.js"></script> 
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

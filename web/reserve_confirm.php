@@ -130,8 +130,7 @@ $options_cost = [];
   <!--オリジナルCSS-->
   <link href="./css/reserve_confirm.css" rel="stylesheet">
 
-
-<table  cellspacing="0" cellpadding="8">
+<table cellspacing="0" cellpadding="8">
   <thead>
     <tr>
       <th>要素名</th>
@@ -175,6 +174,7 @@ $options_cost = [];
       <td><?= htmlspecialchars($place_comment, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
     <?php endif; ?>
+    <tr>
       <td>エリア</td>
       <td><?= htmlspecialchars($area, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
@@ -204,11 +204,9 @@ $options_cost = [];
       <td><?= htmlspecialchars($comment, ENT_QUOTES, 'UTF-8') ?></td>
     </tr>
     <?php endif; ?>
-
   </tbody>
 </table>
-
-<table  cellspacing="0" cellpadding="8">
+<table cellspacing="0" cellpadding="8">
   <thead>
     <tr>
       <th>要素名</th>
@@ -216,58 +214,28 @@ $options_cost = [];
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>コース</td>
-      <td><?= htmlspecialchars($cost['course_cost'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php if (!empty($cost['nomination_fee'])): ?>
-    <tr>
-      <td>指名料</td>
-      <td><?= htmlspecialchars($cost['nomination_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php endif; ?>
-    <?php if (!empty($cost['haken_fee'])): ?>
-    <tr>
-      <td>派遣料</td>
-      <td><?= htmlspecialchars($cost['haken_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php endif; ?>
-    <?php if (!empty($cost['towel_fee'])): ?>
-    <tr>
-      <td>タオル料</td>
-      <td><?= htmlspecialchars($cost['towel_fee'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php endif; ?>
-    <?php if (!empty($options)): ?>
-    <tr>
-      <td>オプション料</td>
-      <td></td>
-    </tr>
-    <?php foreach ($options as $index => $opt_name): ?>
-    <tr>
-      <td><?= htmlspecialchars($opt_name, ENT_QUOTES, 'UTF-8') ?></td>
-      <td><?= isset($options_cost[$index]) ? htmlspecialchars($options_cost[$index], ENT_QUOTES, 'UTF-8') . '円' : '-' ?></td>
-    </tr>
-    <?php endforeach; ?>
-    <?php endif; ?>
-    <?php if (!empty($cost['coupon_discount'])): ?>
-    <tr>
-      <td>クーポン割引</td>
-      <td>-<?= htmlspecialchars($cost['coupon_discount'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php endif; ?>
-    <?php if (!empty($cost['use_point'])): ?>
-    <tr>
-      <td>ポイント割引</td>
-      <td>-<?= htmlspecialchars($cost['use_point'], ENT_QUOTES, 'UTF-8') ?>円</td>
-    </tr>
-    <?php endif; ?>
-
-
-    <tr>
-      <td><strong>合計</strong></td>
-      <td><strong><?= htmlspecialchars($cost['total_amount'], ENT_QUOTES, 'UTF-8') ?>円</strong></td>
-    </tr>
+    <?php
+    if (is_array($cost) && count($cost) > 0):
+        foreach ($cost as $item):
+            $name = $item['name'] ?? '';
+            $amount = $item['amount'] ?? 0;
+            
+            if ($amount == 0) continue;
+            
+            $is_total = ($name === '合計');
+            $style = $is_total ? 'font-weight: bold;' : '';
+            $amount_color = $amount < 0 ? 'color: red;' : '';
+    ?>
+        <tr style="<?= $style ?>">
+            <td><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></td>
+            <td style="<?= $amount_color ?>">
+                <?= htmlspecialchars(number_format($amount), ENT_QUOTES, 'UTF-8') ?>円
+            </td>
+        </tr>
+    <?php
+        endforeach;
+    endif;
+    ?>
   </tbody>
 </table>
 
@@ -290,15 +258,23 @@ $options_cost = [];
     <input type="hidden" name="area" value="<?= htmlspecialchars($area) ?>">
     <input type="hidden" name="area_comment" value="<?= htmlspecialchars($area_comment) ?>">
     <input type="hidden" name="comment" value="<?= htmlspecialchars($comment) ?>">
-    <input type="hidden" name="cost_uchiwake" value="<?= htmlspecialchars(json_encode($cost)) ?>">
+    <input type="hidden" name="cost_uchiwake" value="<?= htmlspecialchars(json_encode($cost, JSON_UNESCAPED_UNICODE)) ?>">
     <input type="hidden" name="g_login_id" value="<?= htmlspecialchars($g_login_id) ?>">
     <input type="hidden" name="login_id" value="<?= htmlspecialchars($login_id) ?>">
     <input type="hidden" name="user_name" value="<?= htmlspecialchars($user_name) ?>">
     <input type="hidden" name="coupon" value="<?= htmlspecialchars($coupon) ?>">
     <input type="hidden" name="point" value="<?= htmlspecialchars($point) ?>">
     <input type="hidden" name="course_time" value="<?= htmlspecialchars($course_time) ?>">
-    <input type="hidden" name="cost" value="<?= htmlspecialchars($cost['total_amount']) ?>">
-    
+<?php
+$total_amount = 0;
+foreach ($cost as $item) {
+    if ($item['name'] === '合計') {
+        $total_amount = $item['amount'];
+        break;
+    }
+}
+?>
+<input type="hidden" name="cost" value="<?= htmlspecialchars($total_amount) ?>">
 
 
     <div class="mb-3 text-center">
@@ -311,7 +287,6 @@ $options_cost = [];
     <a type="button" class="btn btn-back" href="reserve.php">戻る</a>
 
 <?php include 'footer.php'; ?>
-<script src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>

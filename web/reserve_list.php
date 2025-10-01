@@ -25,7 +25,12 @@ $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="reserve-list-container">
     <h1>予約リスト</h1>
-    
+    <?php if (isset($_SESSION['cancel_success'])): ?>
+    <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <?= htmlspecialchars($_SESSION['cancel_success']) ?>
+    </div>
+    <?php unset($_SESSION['cancel_success']); ?>
+<?php endif; ?>
     <?php if (empty($reserves)): ?>
         <p>予約がありません</p>
     <?php else: ?>
@@ -64,16 +69,20 @@ $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
                     <div class="reserve-card-right">
                         <div class="reserve-status">
-                            <?php
-                            if ($reserve['done'] == 3) {
-                                echo '<span class="status-completed">完了済み</span>';
-                            } elseif ($reserve['done'] == 2) {
-                                echo '<span class="status-confirmed">ご予約完了</span>';
-                            } elseif ($reserve['done'] == 1) {
-                                echo '<span class="status-pending">追加情報を登録してください</span>';
-                            }
-                            ?>
-                        </div>
+    <?php
+    if ($reserve['done'] == 5) {
+        echo '<span class="status-cancelled">キャンセル済み</span>';
+    } elseif ($reserve['done'] == 3) {
+        echo '<span class="status-completed">完了済み</span>';
+    } elseif ($reserve['done'] == 2) {
+        echo '<span class="status-confirmed">ご予約完了</span>';
+    } elseif ($reserve['done'] == 4) {
+        echo '<span class="status-admin">店舗確認中</span>';
+    } elseif ($reserve['done'] == 1) {
+        echo '<span class="status-pending">追加情報を登録してください</span>';
+    }
+    ?>
+</div>
                     </div>
                 </div>
             </a>

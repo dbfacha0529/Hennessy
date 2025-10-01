@@ -1,0 +1,306 @@
+/* ===== 全体設定 ===== */
+.history-container {
+    max-width: 100%;
+    padding: 3vh 5vw;
+    background: #f5f5f5;
+    min-height: 100vh;
+}
+
+/* ===== ページタイトル ===== */
+.page-title {
+    font-size: 7vw;
+    font-weight: bold;
+    color: #003018;
+    margin-bottom: 3vh;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-title i {
+    font-size: 8vw;
+}
+
+/* ===== 統計カード ===== */
+.stats-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 3vh 5vw;
+    margin-bottom: 3vh;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 3vw;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+    padding: 2vh 3vw;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+
+.stat-item.earn {
+    background: linear-gradient(135deg, #e7f5ec 0%, #c8e6d4 100%);
+}
+
+.stat-item.use {
+    background: linear-gradient(135deg, #ffe7e7 0%, #ffcccc 100%);
+}
+
+.stat-label {
+    font-size: 4vw;
+    color: #666;
+    font-weight: bold;
+}
+
+.stat-value {
+    font-size: 7vw;
+    font-weight: bold;
+}
+
+.stat-item.earn .stat-value {
+    color: #00cc66;
+}
+
+.stat-item.use .stat-value {
+    color: #ff6b6b;
+}
+
+.stat-detail {
+    font-size: 3.5vw;
+    color: #666;
+}
+
+/* ===== フィルターカード ===== */
+.filter-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 3vh 5vw;
+    margin-bottom: 3vh;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+
+.filter-group label {
+    font-size: 4.5vw;
+    font-weight: bold;
+    color: #003018;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-group label i {
+    font-size: 5vw;
+}
+
+.filter-select {
+    padding: 2vh 3vw;
+    font-size: 5vw;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+}
+
+.btn-reset {
+    display: inline-block;
+    margin-top: 2vh;
+    padding: 1.5vh 4vw;
+    background: #f0f0f0;
+    color: #666;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 4.5vw;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.btn-reset:hover {
+    background: #e0e0e0;
+    color: #666;
+}
+
+.btn-reset i {
+    margin-right: 1vw;
+}
+
+/* ===== 履歴カード ===== */
+.history-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 3vh 5vw;
+    margin-bottom: 3vh;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.history-item {
+    padding: 2.5vh 3vw;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #003018;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5vh;
+    flex-wrap: wrap;
+    gap: 1vh;
+}
+
+.history-type {
+    font-size: 4vw;
+    font-weight: bold;
+    padding: 0.8vh 3vw;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-type i {
+    font-size: 4.5vw;
+}
+
+.history-type.use {
+    background: #ffe7e7;
+    color: #ff6b6b;
+}
+
+.history-type.rankup {
+    background: #fff4e7;
+    color: #ff9800;
+}
+
+.history-type.rank {
+    background: #e7f0ff;
+    color: #2196f3;
+}
+
+.history-type.other {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.history-date {
+    font-size: 4vw;
+    color: #999;
+}
+
+.history-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2vw;
+}
+
+.history-point {
+    font-size: 6.5vw;
+    font-weight: bold;
+}
+
+.history-point.plus {
+    color: #00cc66;
+}
+
+.history-point.minus {
+    color: #ff6b6b;
+}
+
+.history-balance {
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    font-size: 4vw;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.balance-label {
+    font-weight: bold;
+}
+
+.balance-before {
+    color: #999;
+}
+
+.balance-after {
+    color: #003018;
+    font-weight: bold;
+}
+
+.history-balance i {
+    font-size: 4vw;
+}
+
+.result-count {
+    text-align: center;
+    color: #666;
+    font-size: 4.5vw;
+    margin-top: 3vh;
+    padding-top: 2vh;
+    border-top: 2px solid #f0f0f0;
+}
+
+.no-history {
+    text-align: center;
+    padding: 5vh 0;
+}
+
+.no-history i {
+    font-size: 15vw;
+    color: #ccc;
+    display: block;
+    margin-bottom: 2vh;
+}
+
+.no-history p {
+    font-size: 5vw;
+    color: #999;
+}
+
+/* ===== 戻るボタン ===== */
+.btn-back {
+    display: block;
+    width: 100%;
+    padding: 2.5vh;
+    background: #003018;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 5vw;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-back:hover {
+    background: #006644;
+    color: white;
+}
+
+.btn-back i {
+    margin-right: 1vw;
+}

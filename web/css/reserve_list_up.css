@@ -1,0 +1,12 @@
+.payment-detail {
+    display: none; /* 追加 */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.payment-detail.open {
+    display: block; /* 追加 */
+    max-height: 1000px;
+    padding: 20px;
+}

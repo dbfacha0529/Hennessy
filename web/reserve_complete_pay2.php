@@ -139,72 +139,38 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
     <div class="payment-details">
         <h2>お支払い金額</h2>
         <table class="payment-table">
-            <?php if (!empty($cost_uchiwake)): ?>
-                <?php if (isset($cost_uchiwake['course_cost'])): ?>
-                <tr>
-                    <td>コース料金</td>
-                    <td class="amount"><?= number_format($cost_uchiwake['course_cost']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['nomination_fee'])): ?>
-                <tr>
-                    <td>指名料</td>
-                    <td class="amount"><?= number_format($cost_uchiwake['nomination_fee']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['haken_fee'])): ?>
-                <tr>
-                    <td>派遣料</td>
-                    <td class="amount"><?= number_format($cost_uchiwake['haken_fee']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['towel_fee'])): ?>
-                <tr>
-                    <td>タオル代</td>
-                    <td class="amount"><?= number_format($cost_uchiwake['towel_fee']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['options_cost'])): ?>
-                <tr>
-                    <td>オプション料金</td>
-                    <td class="amount"><?= number_format($cost_uchiwake['options_cost']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['coupon_discount'])): ?>
-                <tr>
-                    <td>クーポン割引</td>
-                    <td class="amount">-<?= number_format($cost_uchiwake['coupon_discount']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <?php if (!empty($cost_uchiwake['use_point'])): ?>
-                <tr>
-                    <td>ポイント利用</td>
-                    <td class="amount">-<?= number_format($cost_uchiwake['use_point']) ?>円</td>
-                </tr>
-                <?php endif; ?>
-                
-                <tr class="total-row">
-                    <td><strong>決済完了金額</strong></td>
-                    <td class="amount"><strong><?= number_format($total_cost) ?>円</strong></td>
-                </tr>
-            <?php else: ?>
-                <tr class="total-row">
-                    <td><strong>決済完了金額</strong></td>
-                    <td class="amount"><strong><?= number_format($total_cost) ?>円</strong></td>
-                </tr>
-            <?php endif; ?>
+            <?php if (!empty($cost_uchiwake) && is_array($cost_uchiwake)): ?>
+    <?php foreach ($cost_uchiwake as $item): ?>
+        <?php
+        $name = $item['name'] ?? '';
+        $amount = $item['amount'] ?? 0;
+        
+        // 0円の項目はスキップ
+        if ($amount == 0) continue;
+        
+        // 合計行の判定
+        $is_total = ($name === '合計');
+        $row_class = $is_total ? 'total-row' : '';
+        ?>
+        <tr class="<?= $row_class ?>">
+            <td><?= htmlspecialchars($name) ?></td>
+            <td class="amount" style="<?= $amount < 0 ? 'color: red;' : '' ?>">
+                <?= number_format($amount) ?>円
+            </td>
+        </tr>
+    <?php endforeach; ?>
+<?php else: ?>
+    <tr class="total-row">
+        <td><strong><?= ($pay == 2) ? '決済完了金額' : '合計金額' ?></strong></td>
+        <td class="amount"><strong><?= number_format($total_cost) ?>円</strong></td>
+    </tr>
+<?php endif; ?>
         </table>
     </div>
 
     <!-- ボタンエリア -->
     <div class="button-area">
-        <a href="reservation_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
+        <a href="reserve_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
         <a href="home.php" class="btn btn-secondary btn-lg">ホームに戻る</a>
     </div>
 </div>

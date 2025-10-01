@@ -70,7 +70,9 @@ foreach ($times as $t) {
 }
 
 // 予約済み取得
-$stmt = $pdo->prepare("SELECT start_time,end_time FROM reserve WHERE g_login_id=? AND (DATE(start_time)=? OR DATE(start_time)=DATE_ADD(?, INTERVAL 1 DAY))");
+$stmt = $pdo->prepare("SELECT start_time,end_time FROM reserve WHERE g_login_id=? 
+AND (DATE(start_time)=? OR DATE(start_time)=DATE_ADD(?, INTERVAL 1 DAY))
+AND done != 5");
 $stmt->execute([$g_login_id, $date, $date]);
 $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -133,11 +133,12 @@ function getAvailableGirls($pdo, $baseDate, $start_time, $end_time, $course_time
 function checkReservationConflict($pdo, $g_login_id, $slot, $slotEndTime, $baseDate) {
     // 基準日ベースで予約を取得（深夜の予約も含む）
     $stmt = $pdo->prepare("
-        SELECT start_time, end_time 
-        FROM reserve 
-        WHERE g_login_id = :g_login_id 
-        AND date = :base_date
-    ");
+    SELECT start_time, end_time 
+    FROM reserve 
+    WHERE g_login_id = :g_login_id 
+    AND date = :base_date
+    AND done != 5
+");
     $stmt->execute([
         ':g_login_id' => $g_login_id,
         ':base_date' => $baseDate
@@ -210,6 +211,7 @@ function getTodayReservationCount($pdo, $g_login_id, $baseDate) {
         FROM reserve 
         WHERE g_login_id = :g_login_id 
         AND date = :base_date
+        AND done IN (1, 2, 3, 4)
     ");
     $stmt->execute([
         ':g_login_id' => $g_login_id,
@@ -219,7 +221,6 @@ function getTodayReservationCount($pdo, $g_login_id, $baseDate) {
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return (int)$result['count'];
 }
-
 /**
  * 最適な候補者を選択
  */
@@ -268,11 +269,12 @@ function checkFinalReservationConflict($pdo, $reserveData) {
     
     // 該当女の子の既存予約をチェック
     $stmt = $pdo->prepare("
-        SELECT start_time, end_time 
-        FROM reserve 
-        WHERE g_login_id = :g_login_id 
-        AND date = :date
-    ");
+    SELECT start_time, end_time 
+    FROM reserve 
+    WHERE g_login_id = :g_login_id 
+    AND date = :date
+    AND done IN (1, 2, 3, 4)
+");
     $stmt->execute([
         ':g_login_id' => $g_login_id,
         ':date' => $date

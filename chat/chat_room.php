@@ -65,7 +65,7 @@ try {
         
         #chat-header {
             padding: 15px 20px;
-            background-color: #4a90e2;
+            background-color: #00753aff;
             color: white;
             display: flex;
             align-items: center;
@@ -197,7 +197,7 @@ try {
         
         button {
             padding: 10px 20px;
-            background-color: #4a90e2;
+            background-color: #008d46ff;
             color: white;
             border: none;
             border-radius: 20px;
@@ -208,7 +208,7 @@ try {
         }
         
         button:hover {
-            background-color: #357abd;
+            background-color: #00743aff;
         }
         
         button:active {
@@ -221,9 +221,9 @@ try {
         }
         
         .file-button {
-            background-color: #6c757d;
-            padding: 10px 15px;
-            font-size: 18px;
+            background-color: #c5c5c5ff;
+            padding: 10px 18px;
+            font-size: 28px;
         }
         
         .file-button:hover {
@@ -303,14 +303,14 @@ try {
 }
 
 .message-girl .message-content p {
-    background-color: #e8e8e8;
-    color: #333;
+    background-color: #f7daeeff;
+    color: #000000ff;
     border-bottom-left-radius: 4px;
 }
 
 .message-user .message-content p {
-    background-color: #4a90e2;
-    color: white;
+    background-color: #d2e6dcff;
+    color: #000000ff;
     border-bottom-right-radius: 4px;
 }
     </style>
@@ -328,7 +328,7 @@ try {
         
         <div id="chat-input-area">
     <label for="file-input" class="file-button" title="ファイルを添付">
-        📎
+        +
     </label>
     <input type="file" id="file-input" accept="image/*,video/*,audio/*">
     

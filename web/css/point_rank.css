@@ -1,0 +1,380 @@
+/* ===== 全体設定 ===== */
+.point-rank-container {
+    max-width: 100%;
+    padding: 3vh 5vw;
+    background: #f5f5f5;
+    min-height: 100vh;
+}
+
+/* ===== カード共通スタイル ===== */
+.rank-card,
+.progress-card,
+.point-card,
+.benefits-card,
+.history-card,
+.links-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 4vh 5vw;
+    margin-bottom: 3vh;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== セクションタイトル ===== */
+.section-title {
+    font-size: 5.5vw;
+    font-weight: bold;
+    margin-bottom: 2.5vh;
+    color: #003018;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title i {
+    font-size: 6vw;
+}
+
+/* ===== ランクカード ===== */
+.rank-card {
+    text-align: center;
+    background: linear-gradient(135deg, #003018 0%, #006644 100%);
+    color: white;
+}
+
+.rank-card.beginner {
+    background: linear-gradient(135deg, #808080 0%, #A9A9A9 100%);
+    color: white;
+}
+
+.rank-card.bronze {
+    background: linear-gradient(135deg, #CD7F32 0%, #E8A87C 100%);
+}
+
+.rank-card.silver {
+    background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%);
+    color: #333;
+}
+
+.rank-card.gold {
+    background: linear-gradient(135deg, #FFD700 0%, #FFF4A3 100%);
+    color: #333;
+}
+
+.rank-card.diamond {
+    background: linear-gradient(135deg, #B9F2FF 0%, #00CED1 100%);
+    color: #333;
+}
+
+.rank-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2vh;
+    margin-bottom: 2vh;
+}
+
+.rank-badge i {
+    font-size: 15vw;
+}
+
+.rank-name {
+    font-size: 7vw;
+    font-weight: bold;
+}
+
+.user-info p {
+    font-size: 5vw;
+    margin: 1vh 0;
+}
+
+.usage-count {
+    font-size: 5.5vw !important;
+}
+
+.usage-count strong {
+    font-size: 7vw;
+}
+
+/* ===== 進捗カード ===== */
+.progress-info {
+    margin-bottom: 3vh;
+}
+
+.next-rank-text {
+    font-size: 5vw;
+    text-align: center;
+    margin-bottom: 2vh;
+    line-height: 1.8;
+}
+
+.highlight {
+    color: #ff6b6b;
+    font-size: 7vw;
+}
+
+.next-rank {
+    color: #003018;
+    font-size: 6vw;
+}
+
+.progress-bar-container {
+    margin: 2vh 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4vh;
+    background: #e0e0e0;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #003018 0%, #00cc66 100%);
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 4.5vw;
+    color: #666;
+    margin-top: 1vh;
+}
+
+/* 次のランク特典 */
+.next-benefits {
+    background: #f8f9fa;
+    padding: 3vh;
+    border-radius: 10px;
+    margin-top: 3vh;
+}
+
+.next-benefits h3 {
+    font-size: 5vw;
+    font-weight: bold;
+    margin-bottom: 2vh;
+    color: #003018;
+}
+
+.next-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.next-benefits li {
+    font-size: 4.5vw;
+    padding: 1.5vh 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.next-benefits li:last-child {
+    border-bottom: none;
+}
+
+.next-benefits i {
+    color: #ff6b6b;
+    font-size: 5vw;
+}
+
+/* 最高ランク達成 */
+.max-rank {
+    text-align: center;
+    background: linear-gradient(135deg, #FFD700 0%, #FFF4A3 100%);
+}
+
+.congrats-text {
+    font-size: 5.5vw;
+    color: #333;
+    margin-top: 2vh;
+}
+
+/* ===== ポイントカード ===== */
+.point-display {
+    text-align: center;
+    padding: 3vh 0;
+}
+
+.point-value {
+    font-size: 12vw;
+    font-weight: bold;
+    color: #003018;
+}
+
+.point-unit {
+    font-size: 8vw;
+    color: #666;
+    margin-left: 2vw;
+}
+
+/* ===== 特典カード ===== */
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.benefits-list li {
+    font-size: 5vw;
+    padding: 2vh 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.benefits-list li:last-child {
+    border-bottom: none;
+}
+
+.benefits-list i {
+    color: #00cc66;
+    font-size: 6vw;
+}
+
+/* ===== 履歴カード ===== */
+.history-list {
+    margin-bottom: 3vh;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5vh 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-left,
+.history-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+}
+
+.history-type {
+    font-size: 4vw;
+    font-weight: bold;
+    padding: 0.5vh 2vw;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-type i {
+    font-size: 4vw;
+}
+
+.history-type.use {
+    background: #ffe7e7;
+    color: #ff6b6b;
+}
+
+.history-type.rankup {
+    background: #fff4e7;
+    color: #ff9800;
+}
+
+.history-type.rank {
+    background: #e7f0ff;
+    color: #2196f3;
+}
+
+.history-type.other {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.history-date {
+    font-size: 4vw;
+    color: #999;
+}
+
+.history-right {
+    text-align: right;
+}
+
+.history-point {
+    font-size: 5.5vw;
+    font-weight: bold;
+}
+
+.history-point.plus {
+    color: #00cc66;
+}
+
+.history-point.minus {
+    color: #ff6b6b;
+}
+
+.history-balance {
+    font-size: 4vw;
+    color: #666;
+}
+
+.no-history {
+    text-align: center;
+    color: #999;
+    font-size: 5vw;
+    padding: 3vh 0;
+}
+
+/* ボタン */
+.btn-view-all {
+    display: block;
+    width: 100%;
+    padding: 2vh;
+    background: #003018;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 5vw;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-view-all:hover {
+    background: #006644;
+    color: white;
+}
+
+.btn-view-all i {
+    margin-left: 1vw;
+}
+
+/* ===== リンクカード ===== */
+.info-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2.5vh;
+    background: #f8f9fa;
+    color: #003018;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 5vw;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.info-link:hover {
+    background: #e9ecef;
+    color: #003018;
+}
+
+.info-link i {
+    font-size: 6vw;
+}

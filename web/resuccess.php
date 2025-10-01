@@ -36,7 +36,7 @@ session_start();
       <h3>ユーザーID:<?= $_SESSION['USER_DATE']["login_id"] ?></h3>
       <h3>ニックネーム:<?= $_SESSION['USER_DATE']["user_name"] ?></h3>
       <h3>TEL:<?= $_SESSION['USER_DATE']["tel"] ?></h3>
-      <h3>PASSWORD:<?= $_SESSION['USER_DATE']["password"] ?></h3>
+      
 
     </div>
   </div>

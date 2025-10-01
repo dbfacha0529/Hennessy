@@ -8,14 +8,14 @@ class ChatClient {
         this.isPolling = false;
     }
     
-    // ポーリング開始（5秒ごと）
+    // ポーリング開始（10秒ごとに変更）
     startPolling() {
         if (this.isPolling) return;
         
         this.isPolling = true;
         this.pollingInterval = setInterval(() => {
             this.fetchNewMessages();
-        }, 5000);
+        }, 10000); // 5000 → 10000に変更
         
         // 初回実行
         this.fetchNewMessages();
@@ -32,60 +32,44 @@ class ChatClient {
     
     // 新着メッセージ取得
     async fetchNewMessages() {
-    try {
-        const response = await fetch(`chat_api.php?action=get_messages&room_id=${this.roomId}&last_id=${this.lastMessageId}`);
-        const data = await response.json();
-        
-        if (data.success) {
-            // 初回の「読み込み中」を削除
-            const messagesContainer = document.getElementById('chat-messages');
-            const loading = messagesContainer.querySelector('.loading');
-            if (loading) {
-                loading.remove();
-            }
+        try {
+            const response = await fetch(`chat_api.php?action=get_messages&room_id=${this.roomId}&last_id=${this.lastMessageId}`);
+            const data = await response.json();
             
-            if (data.has_new) {
-                data.messages.forEach(message => {
-                    this.displayMessage(message);
-                    this.lastMessageId = Math.max(this.lastMessageId, message.id);
-                });
+            if (data.success) {
+                // 初回の「読み込み中」を削除
+                const messagesContainer = document.getElementById('chat-messages');
+                const loading = messagesContainer.querySelector('.loading');
+                if (loading) {
+                    loading.remove();
+                }
                 
-                // 新着メッセージがあったら既読にする
-                this.markAsRead();
-                
-                // スクロールを最下部へ
-                this.scrollToBottom();
+                if (data.has_new) {
+                    data.messages.forEach(message => {
+                        this.displayMessage(message);
+                        this.lastMessageId = Math.max(this.lastMessageId, message.id);
+                    });
+                    
+                    // 新着メッセージがあったら既読にする
+                    this.markAsRead();
+                    
+                    // スクロールを最下部へ
+                    this.scrollToBottom();
+                }
             }
+        } catch (error) {
+            console.error('メッセージ取得エラー:', error);
         }
-    } catch (error) {
-        console.error('メッセージ取得エラー:', error);
     }
-}
     
     // メッセージ送信
     async sendMessage(content, messageType = 'text', file = null) {
-        // テキストの場合は文字数チェック
-        if (messageType === 'text') {
-            if (content.length > 500) {
-                alert('メッセージは500文字以内で入力してください');
-                return false;
-            }
-            if (!content.trim()) {
-                return false;
-            }
-        }
-        
         const formData = new FormData();
         formData.append('room_id', this.roomId);
         formData.append('message_type', messageType);
         formData.append('content', content);
         
         if (file) {
-            // ファイルサイズチェック（20MB）
-            if (file.size > 20 * 1024 * 1024) {
-                alert('ファイルサイズは20MB以下にしてください');
-                return false;
-            }
             formData.append('file', file);
         }
         
@@ -98,89 +82,85 @@ class ChatClient {
             const data = await response.json();
             
             if (data.success) {
-                // 送信したメッセージを即座に表示
                 this.displayMessage(data.message);
                 this.lastMessageId = Math.max(this.lastMessageId, data.message.id);
                 this.scrollToBottom();
                 return true;
-            } else {
-                alert('送信エラー: ' + (data.error || '不明なエラー'));
-                return false;
             }
         } catch (error) {
             console.error('送信エラー:', error);
-            alert('送信に失敗しました');
-            return false;
         }
-    }
-    
-// メッセージを画面に表示
-displayMessage(message) {
-    const messagesContainer = document.getElementById('chat-messages');
-    
-    // 初回の「読み込み中」を削除
-    const loading = messagesContainer.querySelector('.loading');
-    if (loading) {
-        loading.remove();
-    }
-    
-    // 既に表示されているかチェック
-    if (document.querySelector(`[data-message-id="${message.id}"]`)) {
-        return;
-    }
         
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message message-${message.sender_type}`;
-    messageDiv.dataset.messageId = message.id;
+        return false;
+    }
     
-    // 女の子のメッセージの場合はアイコンを追加
-    if (message.sender_type === 'girl') {
-        const container = document.getElementById('chat-container');
-        const girlImg = container.dataset.girlImg;
+    // メッセージを画面に表示
+    displayMessage(message) {
+        const messagesContainer = document.getElementById('chat-messages');
         
-        if (girlImg) {
-    const avatar = document.createElement('img');
-    avatar.src = `../img/${girlImg}`;
-    avatar.className = 'message-avatar';
-    avatar.style.cssText = 'width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 10px; flex-shrink: 0;';
-    messageDiv.appendChild(avatar);
-}
+        // 初回の「読み込み中」を削除
+        const loading = messagesContainer.querySelector('.loading');
+        if (loading) {
+            loading.remove();
+        }
+        
+        // 既に表示されているかチェック
+        if (document.querySelector(`[data-message-id="${message.id}"]`)) {
+            return;
+        }
+            
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${message.sender_type}`;
+        messageDiv.dataset.messageId = message.id;
+        
+        // 女の子のメッセージの場合はアイコンを追加
+        if (message.sender_type === 'girl') {
+            const container = document.getElementById('chat-container');
+            const girlImg = container.dataset.girlImg;
+            
+            if (girlImg) {
+                const avatar = document.createElement('img');
+                avatar.src = `../img/${girlImg}`;
+                avatar.className = 'message-avatar';
+                avatar.style.cssText = 'width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 10px; flex-shrink: 0;';
+                messageDiv.appendChild(avatar);
+            }
+        }
+        
+        // メッセージコンテンツラッパー
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'message-content';
+        
+        const time = new Date(message.created_at).toLocaleTimeString('ja-JP', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        let contentHtml = '';
+        
+        switch (message.message_type) {
+            case 'text':
+                contentHtml = `<p>${this.escapeHtml(message.content)}</p>`;
+                break;
+            case 'image':
+                contentHtml = `<img src="${message.file_path}" alt="画像" class="chat-image" onclick="window.open(this.src, '_blank')">`;
+                break;
+            case 'video':
+                contentHtml = `<video src="${message.file_path}" controls class="chat-video"></video>`;
+                break;
+            case 'voice':
+                contentHtml = `<audio src="${message.file_path}" controls class="chat-audio"></audio>`;
+                break;
+        }
+        
+        contentWrapper.innerHTML = `
+            ${contentHtml}
+            <span class="message-time">${time}</span>
+        `;
+        
+        messageDiv.appendChild(contentWrapper);
+        messagesContainer.appendChild(messageDiv);
     }
-    
-    // メッセージコンテンツラッパー
-    const contentWrapper = document.createElement('div');
-    contentWrapper.className = 'message-content';
-    
-    const time = new Date(message.created_at).toLocaleTimeString('ja-JP', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    let contentHtml = '';
-    
-    switch (message.message_type) {
-        case 'text':
-            contentHtml = `<p>${this.escapeHtml(message.content)}</p>`;
-            break;
-        case 'image':
-            contentHtml = `<img src="${message.file_path}" alt="画像" class="chat-image" onclick="window.open(this.src, '_blank')">`;
-            break;
-        case 'video':
-            contentHtml = `<video src="${message.file_path}" controls class="chat-video"></video>`;
-            break;
-        case 'voice':
-            contentHtml = `<audio src="${message.file_path}" controls class="chat-audio"></audio>`;
-            break;
-    }
-    
-    contentWrapper.innerHTML = `
-        ${contentHtml}
-        <span class="message-time">${time}</span>
-    `;
-    
-    messageDiv.appendChild(contentWrapper);
-    messagesContainer.appendChild(messageDiv);
-}
     
     // 既読にする
     async markAsRead() {
@@ -229,7 +209,7 @@ async function updateUnreadBadge() {
             }
         }
     } catch (error) {
-        console.error('未読数取得エラー:', error);
+        // console.logを削除（エラーは静かに無視）
     }
 }
 
@@ -311,11 +291,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // home.phpの未読バッジ更新（5秒ごと）
+    // home.phpの未読バッジ更新（10秒ごとに変更）
     const chatBadge = document.getElementById('chat-badge');
     if (chatBadge) {
         updateUnreadBadge(); // 初回実行
-        setInterval(updateUnreadBadge, 5000);
+        setInterval(updateUnreadBadge, 10000); // 5000 → 10000に変更
     }
 });
-

@@ -118,12 +118,22 @@ try {
     $stmt->execute($data);
 
     // 登録ID取得
-    $lastId = $pdo->lastInsertId();
+$lastId = $pdo->lastInsertId();
 
-    // doneカラム更新
-    $updateSql = "UPDATE reserve SET done = 1 WHERE id = :id";
-    $updateStmt = $pdo->prepare($updateSql);
-    $updateStmt->execute([':id' => $lastId]);
+// done値を判定
+$done = 1; // デフォルトはユーザー入力待ち
+
+// 管理者対応が必要な条件
+if ($data[':place'] === 'その他' || 
+    $data[':area'] === 'その他' || 
+    $data[':place'] === 'ご自宅') {
+    $done = 4; // 管理者対応・確認待ち
+}
+
+// doneカラム更新
+$updateSql = "UPDATE reserve SET done = :done WHERE id = :id";
+$updateStmt = $pdo->prepare($updateSql);
+$updateStmt->execute([':id' => $lastId, ':done' => $done]);
 
     // ポイント処理をtry-catchで囲む
     try {

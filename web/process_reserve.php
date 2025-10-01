@@ -96,19 +96,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // 3. 日付チェック
-    if (empty($reserve_dates)) {
-        $err['date'][] = '日付を選択してください';
+if (empty($reserve_dates)) {
+    $err['date'][] = '日付を選択してください';
+} else {
+    $dateObj = new DateTime($reserve_dates);
+    if (!$dateObj || $dateObj->format('Y-m-d') !== $reserve_dates) {
+        $err['date'][] = '日付の形式が正しくありません';
     } else {
-        $dateObj = new DateTime($reserve_dates);
-        if (!$dateObj || $dateObj->format('Y-m-d') !== $reserve_dates) {
-            $err['date'][] = '日付の形式が正しくありません';
-        } else {
-            $today = new DateTime();
-            if ($dateObj < $today->setTime(0, 0, 0)) {
-                $err['date'][] = '過去の日付は選択できません';
-            }
+        // 基準日を取得(reserve.phpと同じロジック)
+        $baseDate = getBaseDate();
+        $baseDateObj = new DateTime($baseDate);
+        
+        // 基準日より前の日付は選択不可
+        if ($dateObj < $baseDateObj) {
+            $err['date'][] = '過去の日付は選択できません';
         }
     }
+}
     
     // 4. 時間チェック
     if (empty($reserve_stime)) {
@@ -331,16 +335,39 @@ if ($placeFeeData) {
         $totalAmount = $courseCost + $nominationFee + $hakenFee + $towelFee + $optionsCost - $couponDiscount - $use_point;
         $totalAmount = max(0, $totalAmount);
         
-        $reserveData['pricing'] = [
-            'course_cost' => $courseCost,
-            'nomination_fee' => $nominationFee,
-            'haken_fee' => $hakenFee,
-            'towel_fee' => $towelFee,
-            'options_cost' => $optionsCost,
-            'coupon_discount' => $couponDiscount,
-            'use_point' => $use_point,
-            'total_amount' => $totalAmount
-        ];
+        // 新形式：配列形式で内訳を作成
+$breakdown = [];
+
+// プラス項目（金額が0より大きいもの）
+if ($courseCost > 0) {
+    $breakdown[] = ['name' => 'コース料金', 'amount' => $courseCost];
+}
+if ($nominationFee > 0) {
+    $breakdown[] = ['name' => '指名料', 'amount' => $nominationFee];
+}
+if ($hakenFee > 0) {
+    $breakdown[] = ['name' => '派遣料', 'amount' => $hakenFee];
+}
+if ($towelFee > 0) {
+    $breakdown[] = ['name' => 'タオル代', 'amount' => $towelFee];
+}
+if ($optionsCost > 0) {
+    $breakdown[] = ['name' => 'オプション料金', 'amount' => $optionsCost];
+}
+
+// マイナス項目（割引）
+if ($couponDiscount > 0) {
+    $breakdown[] = ['name' => 'クーポン割引', 'amount' => -$couponDiscount];
+}
+if ($use_point > 0) {
+    $breakdown[] = ['name' => 'ポイント利用', 'amount' => -$use_point];
+}
+
+// 最後に合計
+$breakdown[] = ['name' => '合計', 'amount' => $totalAmount];
+
+// セッションに保存
+$reserveData['pricing'] = $breakdown;
         
         // ここで確認画面に遷移 or DB登録
         // 今回は確認画面表示用のセッションに保存

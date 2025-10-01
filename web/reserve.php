@@ -110,6 +110,20 @@ function getAllOptions($pdo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+//遷移データ
+$preselected_g_login_id = $_GET['g_login_id'] ?? '';
+$preselected_g_name = '';
+
+if (!empty($preselected_g_login_id)) {
+    $stmt = $pdo->prepare("SELECT name FROM girl WHERE g_login_id = :g_login_id LIMIT 1");
+    $stmt->bindValue(':g_login_id', $preselected_g_login_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $preselected_girl = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($preselected_girl) {
+        $preselected_g_name = $preselected_girl['name'];
+    }
+}
 
 ?>
 
@@ -461,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(oldData.coupon_code) document.getElementById('coupon_code').value = oldData.coupon_code;
 
     // ポイント
-    if(oldData.use_point) document.getElementById('use_point').value = oldData.use_point;
+    //if(oldData.use_point) document.getElementById('use_point').value = oldData.use_point;
 
     // 電話番号
     if(oldData.contact_tel) document.getElementById('use_tel').value = oldData.contact_tel;
@@ -597,11 +611,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCouponDiscount();
     }
 
-    // ポイント入力がある場合はバリデーション実行
-    if(oldData.use_point) {
-        const pointEvent = new Event('input');
-        usePointInput.dispatchEvent(pointEvent);
-    }
 
     // 支払い方法の制限チェック
     checkPaymentLock();
@@ -1281,6 +1290,13 @@ fetch('get_point.php')
             availablePointEl.textContent = '-';
             pointErrorEl.textContent = data.message;
         }
+        
+        // ポイント残高取得後にポイント復元処理を実行
+        if(oldData.use_point) {
+            usePointInput.value = oldData.use_point;
+            const pointEvent = new Event('input');
+            usePointInput.dispatchEvent(pointEvent);
+        }
     })
     .catch(err => {
         availablePointEl.textContent = '-';
@@ -1343,8 +1359,31 @@ function submitReservation() {
 }
 </script>
 
+<script>
+// 遷移データ
+const preselectedGirlName = '<?= htmlspecialchars($preselected_g_name, ENT_QUOTES, 'UTF-8') ?>';
+
+// 既存のDOMContentLoadedが完了した後に実行するため、setTimeoutを使用
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        if (preselectedGirlName) {
+            const girlSelect = document.getElementById('girl-select');
+            if (girlSelect) {
+                // value（名前）で直接設定
+                girlSelect.value = preselectedGirlName;
+                
+                // changeイベントを発火
+                const event = new Event('change', { bubbles: true });
+                girlSelect.dispatchEvent(event);
+                
+                console.log('Girl preselected:', preselectedGirlName); // デバッグ用
+            }
+        }
+    }, 500); // 既存の復元処理完了を待つ
+});
+</script>
 <?php include 'footer.php'; ?>
-<script src="script.js"></script>  
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
  crossorigin="anonymous"></script>

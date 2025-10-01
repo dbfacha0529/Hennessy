@@ -331,4 +331,33 @@ function toggleFavorite(gLoginId, button) {
 }
 </script>
 
+
+<script>
+// 現在のキャストIDをJavaScriptに渡す
+const currentGirlId = '<?= htmlspecialchars($g_login_id, ENT_QUOTES, 'UTF-8') ?>';
+
+// ページ読み込み時にフッターの予約リンクを更新
+document.addEventListener('DOMContentLoaded', function() {
+  // フッターの予約アイコンのリンクを更新
+  const footerReserveLinks = document.querySelectorAll('footer a[href*="reserve.php"]');
+  footerReserveLinks.forEach(function(link) {
+    if (currentGirlId) {
+      // 既存のクエリパラメータがある場合は考慮
+      const url = new URL(link.href, window.location.origin);
+      url.searchParams.set('g_login_id', currentGirlId);
+      link.href = url.toString();
+    }
+  });
+  
+  // 「この子を予約する」ボタンも同様に設定（もしあれば）
+  const reserveButtons = document.querySelectorAll('a.btn-reserve, .reserve-btn');
+  reserveButtons.forEach(function(btn) {
+    if (currentGirlId && btn.href.includes('reserve.php')) {
+      const url = new URL(btn.href, window.location.origin);
+      url.searchParams.set('g_login_id', currentGirlId);
+      btn.href = url.toString();
+    }
+  });
+});
+</script>
 <?php include 'footer.php'; ?>
