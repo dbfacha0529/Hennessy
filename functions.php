@@ -219,3 +219,15 @@ function get_BaseDateFromReservation($reservationDateTime) {
     $dt = new DateTime($reservationDateTime);
     return get_BaseDate($dt);
 }
+
+// ランクのクラス名を取得する関数
+function getRankClass($rank_name) {
+    $classes = [
+        'ビギナー' => 'beginner',
+        'ブロンズ' => 'bronze',
+        'シルバー' => 'silver',
+        'ゴールド' => 'gold',
+        'ダイヤモンド' => 'diamond'
+    ];
+    return $classes[$rank_name] ?? 'beginner';
+}

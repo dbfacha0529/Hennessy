@@ -10,3 +10,23 @@
     max-height: 1000px;
     padding: 20px;
 }
+/* エリア選択の警告メッセージ */
+.alert-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: #856404;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-warning i {
+    font-size: 1.2em;
+    color: #ffc107;
+}
+
+.alert-warning strong {
+    font-weight: bold;
+}

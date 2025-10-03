@@ -1,51 +1,447 @@
-body{
-  margin-bottom: 15vh;
+/* home.css - フォントサイズをremに統一（ランク表示含む完全版） */
+
+.home-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.25rem 0.5rem;
+}
+
+/* ================= セクション共通 ================= */
+section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 0.25rem solid #00753a;
+}
+
+.section-title i {
+  margin-right: 0.625rem;
+  color: #00753a;
+  font-size: 4rem;
+}
+
+/* ================= 女の子カード ================= */
+.gcard-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.gcard-link:hover {
+  transform: translateY(-0.125rem);
 }
 
 .gcard {
   display: flex;
-  gap: 10px;
-  background-color: #df9c9c;
-  width: 90%;
-  margin: auto;
-  height: 10vh; /* 画像高さと揃える */
-  align-items: stretch; /* 左右の高さを揃える */
-  border-radius: 7px;
+  gap: 1rem;
+  background-color: #fce1f4;
+  width: 100%;
+  margin: 1rem 0;
+  min-height: 7.5rem;
+  align-items: center;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.5rem 1.25rem 1rem;
 }
 
 .gcardimg {
-  width: 9vh;
-  height: 9vh;
+  width: 8rem;
+  height: 8rem;
   object-fit: cover;
-  margin:auto;
-  margin-left:10px;
+  border-radius: 0.625rem;
+  flex-shrink: 0;
 }
 
-.gcard-textarea {
+.gcard-center {
   flex: 1;
   display: flex;
-  justify-content: space-between; /* 左右に分ける */
-
-  padding-right: 10px;            /* 右端の余白 */
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
 }
 
-.left-text {
+.name {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.headcomment {
+  font-size: 2.25rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gcard-right {
   display: flex;
-  flex-direction: column; /* 縦に並べる */
-  justify-content: flex-start; /* 上に詰める */
-  gap: 5px; /* name と headcomment の間隔 */
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 5rem;
+  flex-shrink: 0;
+  min-width: 6.5rem;
 }
 
-.out_time {
-  align-self: flex-end; /* 右下に配置 */
-  font-size: 3vh;
-
-}
-.name{
-  font-size: 3vh;
-}
-.headcomment{
-  margin-left:10px;
-  font-size: 2vh;
+.status {
+  font-size: 1.8rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: bold;
+  color: #ffffff;
+  white-space: nowrap;
 }
 
+.status-now {
+  background-color: #ff3b30;
+}
+
+.status-today {
+  background-color: #4CAF50;
+}
+
+.time {
+  font-size: 2.75rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.btn-more {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background-color: #00753a;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0.625rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 2.5rem;
+  transition: background-color 0.3s;
+}
+
+.btn-more:hover {
+  background-color: #005a2d;
+  color: white;
+}
+
+.no-girls {
+  text-align: center;
+  padding: 2.5rem;
+  color: #999;
+  font-size: 2.25rem;
+}
+
+/* ================= 会員ランクカード ================= */
+.rank-card-simple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.rank-card-simple.beginner {
+  background: linear-gradient(135deg, #a8a8a8 0%, #7a7a7a 100%);
+}
+
+.rank-card-simple.bronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+}
+
+.rank-card-simple.silver {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+}
+
+.rank-card-simple.gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
+}
+
+.rank-card-simple.diamond {
+  background: linear-gradient(135deg, #b9f2ff 0%, #87ceeb 100%);
+}
+
+.rank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.rank-badge i {
+  font-size: 4.5rem;
+}
+
+.point-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.point-value {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.point-unit {
+  font-size: 2.5rem;
+}
+
+.rank-progress {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 0.625rem;
+  margin-bottom: 1rem;
+}
+
+.progress-text {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.progress-text strong {
+  color: #fff;
+}
+
+.progress-bar-container {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 0.625rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: white;
+  transition: width 0.3s;
+}
+
+.monthly-bonus {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 2.25rem;
+  text-align: center;
+}
+
+.monthly-bonus i {
+  margin-right: 0.5rem;
+}
+
+.monthly-bonus strong {
+  color: #fff;
+}
+
+.btn-detail {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background-color: white;
+  color: #00753a;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0.625rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 2.5rem;
+  transition: background-color 0.3s;
+}
+
+.btn-detail:hover {
+  background-color: #f0f0f0;
+  color: #00753a;
+}
+
+/* ================= リンクセクション ================= */
+.section-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background-color: white;
+  padding: 1.5rem 1.25rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.link-card:hover {
+  transform: translateY(-0.125rem);
+  color: #333;
+}
+
+.link-card i:first-child {
+  font-size: 4rem;
+  color: #00753a;
+}
+
+.link-card span {
+  flex: 1;
+  font-size: 2.5rem;
+  font-weight: 500;
+}
+
+.link-card i:last-child {
+  font-size: 3rem;
+  color: #999;
+}
+
+/* ================= 店舗情報 ================= */
+.section-shop {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.shop-tel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #00753a;
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border-radius: 0.625rem;
+  transition: background-color 0.3s;
+}
+
+.shop-tel:hover {
+  background-color: #e0e0e0;
+  color: #00753a;
+}
+
+.shop-tel i {
+  font-size: 3rem;
+}
+
+/* ================= レスポンシブ ================= */
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 0.875rem 0.25rem;
+  }
+
+  .section-title {
+    font-size: 1.375rem;
+  }
+
+  .section-title i {
+    font-size: 1.375rem;
+  }
+
+  .gcard {
+    min-height: 5.5rem;
+    padding: 0.875rem 1rem 0.875rem 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .gcardimg {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .name {
+    font-size: 1.125rem;
+  }
+  
+  .headcomment {
+    font-size: 0.9rem;
+  }
+  
+  .status {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .time {
+    font-size: 1rem;
+  }
+
+  .rank-badge {
+    font-size: 1.375rem;
+  }
+
+  .rank-badge i {
+    font-size: 1.625rem;
+  }
+
+  .point-value {
+    font-size: 1.5rem;
+  }
+
+  .point-unit {
+    font-size: 1rem;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+  }
+
+  .monthly-bonus {
+    font-size: 0.9rem;
+  }
+
+  .btn-detail {
+    font-size: 1rem;
+  }
+
+  .btn-more {
+    font-size: 1rem;
+  }
+  
+  .link-card span {
+    font-size: 1rem;
+  }
+
+  .link-card i:first-child {
+    font-size: 1.5rem;
+  }
+
+  .link-card i:last-child {
+    font-size: 1.25rem;
+  }
+
+  .shop-tel {
+    font-size: 1.25rem;
+  }
+
+  .shop-tel i {
+    font-size: 1.25rem;
+  }
+}

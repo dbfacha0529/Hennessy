@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once(dirname(__FILE__) . '/../functions.php');
 
 header('Content-Type: application/json');
@@ -30,12 +33,18 @@ try {
     $courseMinutes = (int)$courseData['time']; // timeカラムから分単位で取得
     $prepTime = 10; // 前後10分
 
-    // シフト取得
-    $sql = "SELECT * FROM shift WHERE date = :date";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':date', $date, PDO::PARAM_STR);
-    $stmt->execute();
-    $shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // シフト取得（get_schedule.phpと同じ方式）
+$sql = "SELECT * FROM shift WHERE DATE(in_time) = :date";
+$stmt = $pdo->prepare($sql);
+$stmt->bindValue(':date', $date, PDO::PARAM_STR);
+$stmt->execute();
+$shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // シフトデータがない場合
+    if (empty($shifts)) {
+        echo json_encode(['no_data' => true]);
+        exit;
+    }
 
     // 予約取得
     $sql = "SELECT * FROM reserve WHERE date = :date AND done != 5";
@@ -45,18 +54,25 @@ try {
     $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     
-    // 30分刻みのスロット生成
-    $slotStart = new DateTime($date . ' 17:00');
-    $slotEnd = new DateTime($date . ' 03:00');
-    $slotEnd->modify('+1 day'); // 翌日3:00まで
+// 30分刻みのスロット生成
+$slotStart = new DateTime($date . ' 17:00');
+$slotEnd = new DateTime($date . ' 03:00');
+$slotEnd->modify('+1 day'); // 翌日3:00まで
 
-    $slots = [];
-    $current = clone $slotStart;
-    while ($current <= $slotEnd) {
-        $slots[] = clone $current;
-        $current->modify('+30 minutes');
-    }
+// 現在時刻を取得し、表示開始時刻を調整（get_schedule.phpと同じ）
+$now = new DateTime();
+$displayStart = max($slotStart, $now);
+$minutes = (int)$displayStart->format('i');
+if ($minutes % 30 !== 0) {
+    $displayStart->modify('+' . (30 - $minutes % 30) . ' minutes');
+}
 
+$slots = [];
+$current = clone $displayStart; // slotStartではなくdisplayStartから
+while ($current <= $slotEnd) {
+    $slots[] = clone $current;
+    $current->modify('+30 minutes');
+}
     // 空き計算
     $availability = [];
     $y = $courseMinutes + 2 * $prepTime; // コース時間 + 前後準備20分

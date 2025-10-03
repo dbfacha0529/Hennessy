@@ -304,3 +304,8 @@
 .btn-back i {
     margin-right: 1vw;
 }
+
+.history-type.refund {
+    background: #e8f5e9;
+    color: #4caf50;
+}

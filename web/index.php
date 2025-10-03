@@ -179,7 +179,7 @@ input[type="checkbox"]:checked::after {
 
 <body>
 
-  <img src="../img/Hennessy.jpg">
+  <img src="../img/Hennessylogo.jpg">
   <form method="post">
 
     <!--アラート表示-->

@@ -38,14 +38,32 @@ if (isset($_SESSION['USER']['tel']) && $_SESSION['USER']['tel'] !== '') {
 $current_dir = basename(dirname($_SERVER['SCRIPT_FILENAME']));
 $base = ($current_dir === 'chat' || $current_dir === 'timeline') ? '../web/' : './';
 $img_base = ($current_dir === 'chat' || $current_dir === 'timeline') ? '../img/' : '../img/';
+
+
 ?>
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hennessy</title>
+<!-- CSS読み込み -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="<?= $base ?>css/common.css" rel="stylesheet">
+<link href="<?= $base ?>css/header.css" rel="stylesheet">
+</head>
+<body class="has-header has-footer">
+
+
 <header class="site-header">
   <div class="container">
     <div class="left-group">
       <a href="<?= $base ?>index.php" class="logo"><img src="<?= $img_base ?>Hennessylogo.jpg" class="logoimg"></a>
       <h1>
-        Membername: <?= htmlspecialchars($_SESSION['USER']['user_name'] ?? '') ?>様<br>
-        ランク: <span class="rank-badge-small"><?= htmlspecialchars($current_rank) ?></span> | 
+        <?= htmlspecialchars($_SESSION['USER']['user_name'] ?? '') ?>様<br>
+         <span class="rank-badge-small <?= getRankClass($current_rank) ?>"><?= htmlspecialchars($current_rank) ?></span> 
         ポイント: 
         <?php
             if ($point_err) {
@@ -58,25 +76,20 @@ $img_base = ($current_dir === 'chat' || $current_dir === 'timeline') ? '../img/'
     </div>
 
     <div class="right-group">
-      <button class="menu-toggle"><i class="bi bi-sliders"></i></i></button>
+      <button class="menu-toggle"><i class="bi bi-sliders"></i></button>
       <nav class="nav">
         <ul class="nav-list">
-          <li><a href="<?= $base ?>index.php">ホーム</a></li>
+          <li><a href="<?= $base ?>home.php">ホーム</a></li>
+          <li><a href="<?= $base ?>account.php">アカウント</a></li>
           <li><a href="<?= $base ?>point_rank.php">ポイント・ランク</a></li>
-          <li><a href="<?= $base ?>about.php">当店について</a></li>
+          <li><a href="<?= $base ?>riyoukiyaku.php">利用規約</a></li>
           <li><a href="<?= $base ?>contact.php">お問い合わせ</a></li>
-          <?php if ($login_id): ?>
-            <li><a href="<?= $base ?>logout.php">ログアウト</a></li>
-          <?php else: ?>
-            <li><a href="<?= $base ?>login.php">ログイン</a></li>
-            <li><a href="<?= $base ?>signup.php">新規登録</a></li>
-          <?php endif; ?>
+          <li><a href="<?= $base ?>logout.php">ログアウト</a></li>
+          
         </ul>
       </nav>
     </div>
   </div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="<?= $base ?>css/header.css" rel="stylesheet">
-  <script src="<?= $base ?>script.js"></script>
 </header>
+
+<script src="<?= $base ?>script.js"></script>

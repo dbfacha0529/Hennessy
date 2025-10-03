@@ -33,8 +33,9 @@ if ($filter_type === 'use') {
     $sql .= " AND type = 'rankup'";
 } elseif ($filter_type === 'rank') {
     $sql .= " AND type = 'rank'";
+} elseif ($filter_type === 'refund') {
+    $sql .= " AND type = 'refund'";
 }
-
 $sql .= " ORDER BY created DESC";
 
 $stmt = $pdo->prepare($sql);
@@ -54,6 +55,7 @@ $total_earned = 0;
 $total_used = 0;
 $total_rankup = 0;
 $total_rank_bonus = 0;
+$total_refund = 0;
 
 foreach ($history_list as $item) {
     $point_abs = abs($item['point']);
@@ -65,16 +67,19 @@ foreach ($history_list as $item) {
     } elseif ($item['type'] === 'rank') {
         $total_rank_bonus += $point_abs;
         $total_earned += $point_abs;
+    } elseif ($item['type'] === 'refund') {
+        $total_refund += $point_abs;
+        $total_earned += $point_abs;
     }
 }
-
 // typeの表示名を取得する関数
 function getTypeDisplay($type) {
     $types = [
         'use' => ['name' => '使用', 'class' => 'use', 'icon' => 'bi-cart-fill'],
-        'refund' => ['name' => 'キャンセル返還', 'class' => 'refund', 'icon' => 'bi-arrow-counterclockwise'],
         'rankup' => ['name' => 'ランクアップ報酬', 'class' => 'rankup', 'icon' => 'bi-trophy-fill'],
-        'rank' => ['name' => 'ランクボーナス', 'class' => 'rank', 'icon' => 'bi-gift-fill']
+        'rank' => ['name' => 'ランクボーナス', 'class' => 'rank', 'icon' => 'bi-gift-fill'],
+        'refund' => ['name' => 'キャンセル返還', 'class' => 'refund', 'icon' => 'bi-arrow-counterclockwise'],
+        'signup_bonus' => ['name' => '新規登録ボーナス', 'class' => 'signup', 'icon' => 'bi-star-fill']  // ← この行を追加
     ];
     return $types[$type] ?? ['name' => $type, 'class' => 'other', 'icon' => 'bi-coin'];
 }
@@ -123,11 +128,12 @@ function getTypeDisplay($type) {
                 <div class="filter-group">
                     <label for="type"><i class="bi bi-funnel"></i> タイプで絞り込み</label>
                     <select name="type" id="type" class="filter-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="all" <?= $filter_type === 'all' ? 'selected' : '' ?>>すべて</option>
-                        <option value="use" <?= $filter_type === 'use' ? 'selected' : '' ?>>使用</option>
-                        <option value="rankup" <?= $filter_type === 'rankup' ? 'selected' : '' ?>>ランクアップ報酬</option>
-                        <option value="rank" <?= $filter_type === 'rank' ? 'selected' : '' ?>>ランクボーナス</option>
-                    </select>
+    <option value="all" <?= $filter_type === 'all' ? 'selected' : '' ?>>すべて</option>
+    <option value="use" <?= $filter_type === 'use' ? 'selected' : '' ?>>使用</option>
+    <option value="rankup" <?= $filter_type === 'rankup' ? 'selected' : '' ?>>ランクアップ報酬</option>
+    <option value="rank" <?= $filter_type === 'rank' ? 'selected' : '' ?>>ランクボーナス</option>
+    <option value="refund" <?= $filter_type === 'refund' ? 'selected' : '' ?>>キャンセル返還</option>
+</select>
                 </div>
             </div>
 

@@ -115,13 +115,19 @@ if (empty($reserve_dates)) {
 }
     
     // 4. 時間チェック
-    if (empty($reserve_stime)) {
-        $err['time'][] = '時間を選択してください';
+if (empty($reserve_stime)) {
+    $err['time'][] = '時間を選択してください';
+} else {
+    if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $reserve_stime)) {
+        $err['time'][] = '時間の形式が正しくありません';
     } else {
-        if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $reserve_stime)) {
-            $err['time'][] = '時間の形式が正しくありません';
+        // 過去時刻チェック
+        $now = new DateTime();
+        if ($reserveDateTime < $now) {
+            $err['time'][] = '過去の時間は予約できません';
         }
     }
+}
     
     // 5. place（形態）チェック
 if (empty($place)) {

@@ -29,6 +29,7 @@
   text-decoration: none;
   position: relative; /* バッジ位置基準 */
   padding: 5px;       /* スマホでもタップしやすく */
+  
 }
 
 .site-footer a:hover {
@@ -37,9 +38,15 @@
 
 /* アイコン下のラベル */
 .icon-label {
-  font-size: 1.2rem;
-  margin-top: 2px;
-}
+    font-size: 1.5rem;
+    display: flex;
+      align-items: flex-start; /* 縦方向上揃え */
+  margin-top: -1rem;
+    margin-left: -0.2rem;  /* 左にずらす */
+  margin-right: -0.2rem; /* 右にずらす */
+  white-space: nowrap;   /* 折り返し防止 */
+  padding-bottom: 1rem;
+  }
 
 /* ===============================
    共通バッジスタイル
@@ -61,14 +68,37 @@
   display: none; /* JSで表示制御 */
 }
 
-/* 予約リスト用ドットバッジ */
-.reserve-badge {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  line-height: normal;
+
+/* チャットバッジ（PC用） */
+.chat-badge {
+    position: absolute;
+    top: 1.875rem;
+    right: -0.9375rem;
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-width: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    display: none;
+    line-height: 1.5rem;
+    padding: 0;
 }
 
+/* 予約リストバッジ（PC用） */
+.reserve-badge {
+    position: absolute;
+    top: 1.875rem;
+    right: -0.9375rem;
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+}
 /* ===============================
    レスポンシブ（スマホ対応）
    =============================== */
@@ -84,26 +114,66 @@
 }
 
   .icon-label {
-    font-size: 0.9rem; /* ラベルを小さめに */
-  }
-
-  /* バッジを小さく微調整 */
-  .badge {
-    top: -4px;
-    right: -5px;
-    min-width: 14px;
-    height: 14px;
-    font-size: 0.6rem;
-    line-height: 14px;
-  }
-
-  .reserve-badge {
-    width: 8px;
-    height: 8px;
-  }
+  font-size: 0.8rem; /* ラベルを小さめに */
+  display: flex;
+  align-items: flex-start; /* 縦方向上揃え */
+  margin-top: -0.5rem;
+    margin-left: -0.2rem;  /* 左にずらす */
+  margin-right: -0.2rem; /* 右にずらす */
+  white-space: nowrap;   /* 折り返し防止 */
+  padding-bottom: 0.5rem;
 }
 
-/* 本文がフッターと被らないように余白 */
-body {
-  padding-bottom: 60px;
+
+
+/* チャットバッジ */
+.chat-badge {
+    position: absolute;
+    top: 1.875rem;
+    right: -0.9375rem;
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.5rem;  /* フォントサイズ */
+    font-weight: bold;
+    min-width: 2.5rem;  /* 幅 */
+    width: 2.5rem;      /* 幅 */
+    height: 2.5rem;     /* 高さ */
+    text-align: center;
+    display: none;
+    line-height: 2.5rem; /* 垂直中央揃え用 */
+    padding: 0;
 }
+
+/* 予約リストバッジ */
+.reserve-badge {
+    position: absolute;
+    top: 1.875rem;
+    right: -0.9375rem;
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+}
+}
+@media (max-width: 480px) {
+    
+    .chat-badge {
+        font-size: 0.8rem;  /* フォントサイズ（スマホ） */
+        min-width: 1rem;    /* 幅（スマホ） */
+        width: 1rem;
+        height: 1rem;       /* 高さ（スマホ） */
+        line-height: 1rem;
+        top: 0.5rem;
+        right: 0.3rem;
+    }
+
+    .reserve-badge {
+        width: 1rem;
+        height: 1rem;
+        top: 0.5rem;
+        right: 0.3rem;
+    }
+}
+

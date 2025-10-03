@@ -1,10 +1,4 @@
-/* Bootstrap上書き用 - 最優先 */
-body {
-    padding-top: 10vh !important;
-    padding-bottom: 11vh !important;
-    width: 100% !important;
-    margin: 0 !important;
-}
+
 
 /* girl_detail専用container（Bootstrapの.containerを完全に上書き） */
 .container {

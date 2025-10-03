@@ -219,6 +219,12 @@ if (isset($_SESSION['cancel_error'])) {
             <?php if ($place !== '未定'): ?>
             <div class="form-group">
                 <label for="area">エリア <?php if ($area === '未定'): ?><span class="required">*</span><?php endif; ?></label>
+                  <?php if ($area === '未定'): ?>
+   <div class="alert alert-warning" style="margin-bottom: 15px;">
+       <i class="bi bi-exclamation-triangle-fill"></i>
+       <strong>ご注意:</strong> エリア選択により、派遣料などの追加料金が発生する場合がございます。
+   </div>
+   <?php endif; ?>
                 <select id="area" name="area" <?php if ($area === '未定'): ?>required<?php endif; ?>>
                     <?php if ($area === '未定'): ?>
                     <option value="">-- 選択してください --</option>

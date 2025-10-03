@@ -15,23 +15,13 @@ $girlsStmt = $pdo->query("SELECT g_login_id, name FROM girl ORDER BY name");
 $girls = k_checkgirls($pdo);
 ?>
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タイムライン</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <style>
-        body {
-            background-color: #f5f5f5;
-            padding-bottom: 11vh;
-            margin: 0;
-        }
+        
+      
         
         .timeline-container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 20px auto;
             padding-bottom: 11vh;
         }
@@ -235,6 +225,7 @@ $girls = k_checkgirls($pdo);
     padding-top: 0;
 }
       
+
     </style>
 </head>
 <body>

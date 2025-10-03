@@ -164,13 +164,16 @@ if (!empty($preselected_g_login_id)) {
 
 <!-- 女の子カード -->
 <div class="gcard" id="girl-card" style="display:none;">
-  <img class="gcardimg" id="girl-img" src="../img/noimage.jpg">
-  <div class="gcard-textarea">
-    <div class="left-text">
-      <span class="name" id="girl-name"></span>
-      <span class="headcomment" id="girl-headcomment"></span>
-    </div>
-    <span class="out_time" id="girl-outtime"></span>
+  <img class="gcardimg" id="girl-img" src="../img/noimage.jpg" alt="">
+  
+  <div class="gcard-center">
+    <span class="name" id="girl-name"></span>
+    <span class="headcomment" id="girl-headcomment"></span>
+  </div>
+  
+  <div class="gcard-right">
+    <span class="status" id="girl-status"></span>
+    <span class="time" id="girl-time"></span>
   </div>
 </div>
 
@@ -956,14 +959,29 @@ function updateSchedule(){
     const isFreeCheck = courseInfo && parseInt(courseInfo.free_check) === 1;
 
     if (isFreeCheck) {
-        fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
-        .then(res => res.json())
-        .then(data => {
-            resetSchedule();
-            const times = Object.keys(data);
+    fetch(`get_schedule_free.php?date=${encodeURIComponent(date)}&c_name=${encodeURIComponent(c_name)}`)
+    .then(res => res.json())
+    .then(data => {
+        resetSchedule();
+        
+        // データがない場合の処理
+        if (data.no_data === true) {
+            scheduleHeader.innerHTML = '<th>メッセージ</th>';
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.textContent = '出勤登録がされていません';
+            td.style.color = 'red';
+            td.style.textAlign = 'center';
+            td.style.padding = '20px';
+            tr.appendChild(td);
+            scheduleBody.appendChild(tr);
+            return;
+        }
+        
+        const times = Object.keys(data);
 
-            // ヘッダー行作成
-            let header = '<th>時間</th>';
+        // ヘッダー行作成
+        let header = '<th>時間</th>';
             times.forEach(t => header += '<th>' + t + '</th>');
             scheduleHeader.innerHTML = header;
 
@@ -1018,6 +1036,21 @@ function updateSchedule(){
         .then(res=>res.json())
         .then(data=>{
             resetSchedule();
+            
+            // データがない場合の処理
+            if (data.no_data === true) {
+                scheduleHeader.innerHTML = '<th>メッセージ</th>';
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.textContent = '出勤登録がされていません';
+                td.style.color = 'red';
+                td.style.textAlign = 'center';
+                td.style.padding = '20px';
+                tr.appendChild(td);
+                scheduleBody.appendChild(tr);
+                return;
+            }
+            
             const times = Object.keys(data);
             let header = '<th>時間</th>';
             times.forEach(t=>header+='<th>'+t+'</th>');
@@ -1119,7 +1152,29 @@ girlSelect.addEventListener('change', ()=>{
             document.getElementById('girl-img').src='../img/'+(data.img||'noimage.jpg');
             document.getElementById('girl-name').textContent=data.name||'';
             document.getElementById('girl-headcomment').textContent=data.head_comment||'';
-            document.getElementById('girl-outtime').textContent=data.out_time||'';
+            
+            // ステータスと時間を表示（home.phpと同じ形式）
+            const statusSpan = document.getElementById('girl-status');
+            const timeSpan = document.getElementById('girl-time');
+            
+            // ステータスの設定
+            if(data.status) {
+                statusSpan.textContent = data.status;
+                statusSpan.className = 'status ' + (data.status === '今すぐOK' ? 'status-now' : 'status-today');
+                statusSpan.style.display = 'block';
+            } else {
+                statusSpan.style.display = 'none';
+            }
+            
+            // 時間の設定
+            // 時間の設定
+if(data.time) {
+    timeSpan.textContent = data.time;
+    timeSpan.style.display = 'block';
+} else {
+    timeSpan.style.display = 'none';
+}
+            
             girlCard.style.display='flex';
         } else girlCard.style.display='none';
         loadGirlOptions(g.g_login_id);
@@ -1311,8 +1366,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// 予約送信ボタンとフォーム送信処理
 function submitReservation() {
+    // 予約時間が過去でないかチェック
+    const reserveDate = dateSelect.value;
+    const reserveTime = timeSelect.value;
+    
+    if (!reserveDate || !reserveTime) {
+        alert('日付と時間を選択してください');
+        return;
+    }
+    
+    // 時間の結合と日跨ぎ処理
+    const [hour, minute] = reserveTime.split(':');
+    let checkDate = reserveDate;
+    
+    // 00:00～07:59は翌日扱い
+    if (parseInt(hour) >= 0 && parseInt(hour) < 8) {
+        const nextDay = new Date(reserveDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        checkDate = nextDay.toISOString().split('T')[0];
+    }
+    
+    const reserveDatetime = new Date(checkDate + 'T' + reserveTime + ':00');
+    const now = new Date();
+    
+    if (reserveDatetime < now) {
+        alert('過去の時間は予約できません。別の時間を選択してください。');
+        return;
+    }
+    
     // フォーム作成・送信
     const form = document.createElement('form');
     form.method = 'POST';

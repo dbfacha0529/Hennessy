@@ -40,21 +40,23 @@ if (isset($_SESSION['USER']['tel'])) {
     <i class="bi bi-calendar-heart"></i>
     <span class="icon-label">ご予約</span>
   </a>
-  <a href="<?= $chat_base ?>chat_list.php" style="position: relative;">
+  <a href="<?= $chat_base ?>chat_list.php">
     <i class="bi bi-chat-text"></i>
     <span class="icon-label">チャット</span>
-    <span id="chat-badge" style="position: absolute; top: 30px; right: -15px; background-color: #ff3b30; color: white; border-radius: 30px; font-size: 30px; font-weight: bold; min-width: 18px; text-align: center; display: none;width: 40px; height: 40px;"></span>
-  </a>
-  <a href="<?= $base ?>reserve_list.php" style="position: relative;">
+    <span id="chat-badge" class="chat-badge"></span>
+</a>
+<a href="<?= $base ?>reserve_list.php">
     <i class="bi bi-calendar2-heart"></i>
     <span class="icon-label">予約リスト</span>
     <?php if ($show_reserve_badge): ?>
-    <span class="reserve-badge" style="position: absolute; top: 30px; right: -15px; background-color: #ff3b30; color: white; border-radius: 50%; width: 20px; height: 20px;"></span>
+    <span class="reserve-badge"></span>
     <?php endif; ?>
-  </a>
+</a>
 </footer>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link href="<?= $base ?>css/footer.css" rel="stylesheet">
 
 <script src="<?= $chat_base ?>chat.js"></script>
+</body>
+</html>

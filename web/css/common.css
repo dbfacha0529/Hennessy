@@ -1,0 +1,372 @@
+/* ===============================
+   全ページ共通スタイル
+   =============================== */
+
+/* リセット・基本設定 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ヘッダー・フッターがあるページ用の余白 */
+body.has-header {
+  padding-top: 10vh;
+}
+
+body.has-footer {
+  padding-bottom: 11vh;
+}
+
+/* ヘッダー・フッター両方あるページ */
+body.has-header.has-footer {
+  padding-top: 10vh;
+  padding-bottom: 11vh;
+}
+
+/* ログイン系ページ（ヘッダー・フッターなし、中央配置） */
+body.auth-page {
+  background-color: #003018;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ===============================
+   コンテナ共通
+   =============================== */
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 10px;
+}
+
+/* ===============================
+   フォーム共通スタイル
+   =============================== */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 7px;
+  border: none;
+  background-color: #adbdb5;
+  color: #000;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 5px #0f6b3d;
+}
+
+.form-control.is-invalid {
+  border: 2px solid #dc3545;
+}
+
+.form-select {
+  border: none;
+  background-color: #adbdb5;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   ボタン共通スタイル
+   =============================== */
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 7px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 16px;
+}
+
+/* メインボタン（緑系） */
+.btn-primary,
+.btn-Login {
+  background-color: #0f6b3d;
+  color: white;
+}
+
+.btn-primary:hover,
+.btn-Login:hover {
+  background-color: #0c5530;
+  color: white;
+}
+
+/* サブボタン（薄緑） */
+.btn-secondary,
+.btn-Create {
+  background-color: #5e9d7e;
+  color: white;
+}
+
+.btn-secondary:hover,
+.btn-Create:hover {
+  background-color: #416d57;
+  color: white;
+}
+
+/* 戻るボタン */
+.btn-back {
+  background-color: #096c3b;
+  color: white;
+}
+
+.btn-back:hover {
+  background-color: #07532c;
+  color: white;
+}
+
+/* パスワード忘れボタン */
+.btn-Forgot {
+  background-color: #0f6b3d;
+  color: white;
+}
+
+.btn-Forgot:hover {
+  background-color: #0c5530;
+  color: white;
+}
+
+/* ===============================
+   アラート・メッセージ
+   =============================== */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* ===============================
+   カード共通
+   =============================== */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===============================
+   テキスト・見出し共通
+   =============================== */
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title i {
+  font-size: 28px;
+  color: #00753a;
+}
+
+/* ===============================
+   画像共通
+   =============================== */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ロゴ画像 */
+.logo-img {
+  width: 200px;
+  height: auto;
+  margin: 20px auto;
+  display: block;
+  border-radius: 10px;
+}
+
+/* ===============================
+   テーブル共通
+   =============================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  color: #003018;
+}
+
+/* ===============================
+   リンク共通
+   =============================== */
+a {
+  color: #0f6b3d;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #003018;
+}
+
+/* ===============================
+   レスポンシブ対応
+   =============================== */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 15px 10px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  table th,
+  table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.has-header {
+    padding-top: 10vh; /* スマホでも10vh統一 */
+  }
+
+  .page-container {
+    padding: 10px 5px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .section-title i {
+    font-size: 22px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  table th,
+  table td {
+    padding: 6px;
+  }
+}
+
+/* ===============================
+   ユーティリティクラス
+   =============================== */
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mt-3 { margin-top: 30px; }
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+.mb-3 { margin-bottom: 30px; }
+
+.d-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.gap-1 { gap: 10px; }
+.gap-2 { gap: 20px; }
+
+/* ===============================
+   スクロールバー（Webkit系ブラウザ）
+   =============================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

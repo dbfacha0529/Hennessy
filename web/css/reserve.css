@@ -1,65 +1,571 @@
-body{
-  margin-bottom: 15vh;
-  margin-top: 15vh;
+/* reserve.css */
+
+/* ベーススタイル */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+body {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+/* コンテナ */
+.reserve-container {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+/* アラート */
+.alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #f8d7da;
+  border: 0.0625rem solid #f5c2c7;
+  color: #842029;
+}
+
+.alert .error {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+/* フォームグループ */
+.mb-3 {
+  margin-bottom: 1.5rem;
+  background: white;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+}
+
+.mb-3 label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+  color: #2c3e50;
+  font-size: 0.9375rem;
+}
+
+/* フォーム要素 */
+.form-select,
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 0.125rem solid #dee2e6;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: #fff;
+}
+
+.form-select:focus,
+.form-control:focus {
+  outline: none;
+  border-color: #00753a;
+  box-shadow: 0 0 0 0.1875rem rgba(0, 117, 58, 0.1);
+}
+
+.form-select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+/* チェックボックス */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+/* エラーメッセージ */
+.text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.375rem;
+  display: block;
+}
+
+/* gcard スタイル (元のファイル準拠) */
+.gcard-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.gcard-link:hover {
+  transform: translateY(-0.125rem);
+}
+
 .gcard {
   display: flex;
-  gap: 10px;
-  background-color: #df9c9c;
-  width: 90%;
-  margin: auto;
-  height: 10vh; /* 画像高さと揃える */
-  align-items: stretch; /* 左右の高さを揃える */
-  border-radius: 7px;
+  gap: 0.625rem;
+  background-color: #fce1f4;
+  width: 100%;
+  margin: 0.625rem 0;
+  height: 10vh;
+  align-items: center;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  padding: 0 1.25rem 0 0.625rem;
 }
 
 .gcardimg {
-  width: 9vh;
-  height: 9vh;
+  width: 8vh;
+  height: 8vh;
   object-fit: cover;
-  margin:auto;
-  margin-left:10px;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 
-.gcard-textarea {
+.gcard-center {
   flex: 1;
   display: flex;
-  justify-content: space-between; /* 左右に分ける */
-
-  padding-right: 10px;            /* 右端の余白 */
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3125rem;
+  overflow: hidden;
 }
 
-.left-text {
+.name {
+  font-size: 2.5vh;
+  font-weight: bold;
+  color: #333;
+}
+
+.headcomment {
+  font-size: 1.8vh;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gcard-right {
   display: flex;
-  flex-direction: column; /* 縦に並べる */
-  justify-content: flex-start; /* 上に詰める */
-  gap: 5px; /* name と headcomment の間隔 */
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 8vh;
+  flex-shrink: 0;
+  min-width: 5.625rem;
 }
 
-.out_time {
-  align-self: flex-end; /* 右下に配置 */
+.status {
+  font-size: 1.8vh;
+  font-weight: bold;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 0.3125rem;
+  white-space: nowrap;
+}
+
+.status-now {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.status-today {
+  background-color: #4ecdc4;
+  color: white;
+}
+
+.time {
   font-size: 3vh;
-
-}
-.name{
-  font-size: 3vh;
-}
-.headcomment{
-  margin-left:10px;
-  font-size: 2vh;
+  color: #69df89;
 }
 
+/* テーブルスタイル */
 .table-wrapper {
-  overflow-x:auto;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
 }
+
 .schedule-table {
+  width: 100%;
   border-collapse: collapse;
   min-width: max-content;
-  table-layout: fixed;
 }
-.schedule-table th, .schedule-table td {
-  border: 1px solid #ccc;
-  padding: 5px;
+
+.schedule-table th,
+.schedule-table td {
+  border: 0.0625rem solid #dee2e6;
+  padding: 1rem;
   text-align: center;
   white-space: nowrap;
+  font-size: 1rem;
+}
+
+.schedule-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.schedule-table td {
+  cursor: default;
+}
+
+.schedule-table td[style*="cursor: pointer"] {
+  background-color: #d1f4e0;
+  font-weight: 600;
+}
+
+.schedule-table td[style*="cursor: pointer"]:hover {
+  background-color: #b8f0d1;
+}
+
+/* 出勤データなしメッセージ */
+.no-schedule-message {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.no-schedule-message h3 {
+  color: #2c3e50;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.no-schedule-message p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00753a 0%, #004d26 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 117, 58, 0.3);
+}
+
+.phone-link:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 117, 58, 0.4);
+}
+
+.phone-icon {
+  font-size: 1.5rem;
+}
+
+/* 支払い情報 */
+.total {
+  background: linear-gradient(135deg, #00753a 0%, #004d26 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 117, 58, 0.2);
+}
+
+.total label {
+  color: white;
+  margin: 0;
+}
+
+/* アコーディオン */
+.accordion {
+  margin-bottom: 1.5rem;
+}
+
+.accordion-item {
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+}
+
+.accordion-button {
+  background: #f8f9fa;
+  border: none;
+  padding: 1rem;
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.accordion-button:hover {
+  background: #e9ecef;
+}
+
+.accordion-body {
+  padding: 1rem;
+}
+
+.accordion-body table {
+  width: 100%;
+  font-size: 0.9375rem;
+}
+
+.accordion-body table th,
+.accordion-body table td {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.accordion-body table th {
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ボタン */
+.btn {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00753a 0%, #004d26 100%);
+  color: white;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 117, 58, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 117, 58, 0.4);
+}
+
+.btn-lg {
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* メッセージ */
+#pay-message,
+#coupon-result,
+#point-error {
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  display: none;
+}
+
+#pay-message:not(:empty) {
+  display: block;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 0.0625rem solid #ffeaa7;
+}
+
+#coupon-result:not(:empty) {
+  display: block;
+  background-color: #d1f4e0;
+  color: #155724;
+}
+
+#point-error:not(:empty) {
+  display: block;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* タブレット対応 (768px以下) */
+@media (max-width: 48rem) {
+  .reserve-container {
+    padding: 1rem;
+  }
+
+  .mb-3 {
+    padding: 1rem;
+  }
+
+  .gcard {
+    height: 9vh;
+    padding: 0 0.75rem 0 0.5rem;
+  }
+
+  .gcardimg {
+    width: 7vh;
+    height: 7vh;
+  }
+
+  .gcard-right {
+    height: 7vh;
+    min-width: 4.5rem;
+  }
+
+  .name {
+    font-size: 2.2vh;
+  }
+
+  .headcomment {
+    font-size: 1.6vh;
+  }
+
+  .status {
+    font-size: 1.6vh;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .time {
+    font-size: 2.5vh;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .total {
+    font-size: 1.125rem;
+    padding: 1.25rem;
+  }
+}
+
+/* スマホ対応 (480px以下) */
+@media (max-width: 30rem) {
+  .reserve-container {
+    padding: 0.75rem;
+  }
+
+  .mb-3 {
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .mb-3 label {
+    font-size: 0.875rem;
+  }
+
+  .form-select,
+  .form-control {
+    padding: 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  .gcard {
+    height: 12vh;
+    gap: 0.625rem;
+    padding: 0 0.75rem;
+  }
+
+  .gcardimg {
+    width: 10vh;
+    height: 10vh;
+  }
+
+  .gcard-center {
+    gap: 0.3125rem;
+  }
+
+  .name {
+    font-size: 2.5vh;
+  }
+
+  .headcomment {
+    font-size: 1.8vh;
+  }
+
+  .gcard-right {
+    height: 10vh;
+    min-width: 5rem;
+  }
+
+  .status {
+    font-size: 1.8vh;
+    padding: 0.3125rem 0.5rem;
+  }
+
+  .time {
+    font-size: 3vh;
+  }
+
+  .table-wrapper {
+    padding: 1rem;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .no-schedule-message {
+    padding: 1.5rem;
+  }
+
+  .no-schedule-message h3 {
+    font-size: 1.125rem;
+  }
+
+  .no-schedule-message p {
+    font-size: 0.9375rem;
+  }
+
+  .phone-link {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .total {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .btn-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
 }

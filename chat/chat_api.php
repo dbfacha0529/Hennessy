@@ -146,23 +146,29 @@ function getOrCreateRoom($pdo) {
     }
     
     try {
-        // チャット開始権限チェック
-        $sql = "SELECT COUNT(*) FROM reserve 
-                WHERE tel = :tel AND g_login_id = :g_login_id AND done = 3";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['tel' => $user_tel, 'g_login_id' => $g_login_id]);
-        $has_reservation = $stmt->fetchColumn() > 0;
+        // === サポートアカウントの場合は予約チェックをスキップ ===
+        $is_support = ($g_login_id === 'support');
         
-        $sql = "SELECT COUNT(*) FROM chat_rooms 
-                WHERE user_tel = :user_tel AND g_login_id = :g_login_id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['user_tel' => $user_tel, 'g_login_id' => $g_login_id]);
-        $has_room = $stmt->fetchColumn() > 0;
-        
-        if (!$has_reservation && !$has_room) {
-            echo json_encode(['error' => 'No permission to start chat']);
-            return;
+        if (!$is_support) {
+            // 通常の女の子: チャット開始権限チェック
+            $sql = "SELECT COUNT(*) FROM reserve 
+                    WHERE tel = :tel AND g_login_id = :g_login_id AND done = 3";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['tel' => $user_tel, 'g_login_id' => $g_login_id]);
+            $has_reservation = $stmt->fetchColumn() > 0;
+            
+            $sql = "SELECT COUNT(*) FROM chat_rooms 
+                    WHERE user_tel = :user_tel AND g_login_id = :g_login_id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['user_tel' => $user_tel, 'g_login_id' => $g_login_id]);
+            $has_room = $stmt->fetchColumn() > 0;
+            
+            if (!$has_reservation && !$has_room) {
+                echo json_encode(['error' => 'No permission to start chat']);
+                return;
+            }
         }
+        // サポートアカウントの場合は権限チェックなしで続行
         
         // 既存のルームを検索
         $sql = "SELECT * FROM chat_rooms 
@@ -190,7 +196,6 @@ function getOrCreateRoom($pdo) {
         echo json_encode(['error' => $e->getMessage()]);
     }
 }
-
 // メッセージ一覧を取得
 function getMessages($pdo) {
     $room_id = $_GET['room_id'] ?? null;

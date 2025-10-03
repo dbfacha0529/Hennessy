@@ -88,6 +88,18 @@ if (empty($err)) {
       $stmt = $pdo->prepare($sql);
       $stmt->execute($arr);
 
+      
+    // 新規登録ボーナス3000ポイント付与
+    $signupBonus = 3000;
+    $sqlPoint = "INSERT INTO point (tel, type, point, balance_before, balance_after, created) 
+                 VALUES (:tel, 'signup_bonus', :point, 0, :balance_after, NOW())";
+    $stmtPoint = $pdo->prepare($sqlPoint);
+    $stmtPoint->execute([
+        ':tel' => $tel,
+        ':point' => $signupBonus,
+        ':balance_after' => $signupBonus
+    ]);
+   
 
   //各種入力値をセッション変数に保存する!
     $_SESSION['USER_DATE']['login_id'] = $login_id;

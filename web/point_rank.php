@@ -25,30 +25,36 @@ $next_rank_name = $_SESSION['RANK']['next_rank'] ?? null;
 $next_required_count = $_SESSION['RANK']['next_required_count'] ?? null;
 $next_rankup_bonus = $_SESSION['RANK']['next_rankup_bonus'] ?? null;
 $monthly_bonus = $_SESSION['RANK']['monthly_bonus'] ?? 0;
-
+// 今月の利用回数を取得
+$current_month = date('Y-m');
+$stmt = $pdo->prepare("
+    SELECT COUNT(*) as monthly_count 
+    FROM reserve 
+    WHERE tel = :tel 
+    AND done >= 2 
+    AND DATE_FORMAT(date, '%Y-%m') = :current_month
+");
+$stmt->execute([
+    ':tel' => $tel,
+    ':current_month' => $current_month
+]);
+$monthly_usage_count = $stmt->fetch(PDO::FETCH_ASSOC)['monthly_count'];
+$monthly_remaining = max(0, 3 - $monthly_usage_count);
 // ランククラス名を取得
-function getRankClass($rank_name) {
-    $classes = [
-        'ビギナー' => 'beginner',
-        'ブロンズ' => 'bronze',
-        'シルバー' => 'silver',
-        'ゴールド' => 'gold',
-        'ダイヤモンド' => 'diamond'
-    ];
-    return $classes[$rank_name] ?? 'beginner';
-}
+
 
 // 現在のランク特典を取得
 function getCurrentRankBenefits($rank_name, $monthly_bonus) {
     $base_benefits = [
         'ビギナー' => ['基本サービス'],
-        'ブロンズ' => ['月次ボーナス ' . $monthly_bonus . 'P', '会員限定クーポン'],
-        'シルバー' => ['月次ボーナス ' . $monthly_bonus . 'P', '会員限定クーポン', '誕生日特典'],
-        'ゴールド' => ['月次ボーナス ' . $monthly_bonus . 'P', '優先予約権', '誕生日月ポイント2倍', '人気キャスト優先指名'],
-        'ダイヤモンド' => ['月次ボーナス ' . $monthly_bonus . 'P', 'VIP専用サポート', '新人キャスト優先体験', '特別イベント招待']
+        'ブロンズ' => ['マンスリーボーナス ' . $monthly_bonus . 'P'],
+        'シルバー' => ['マンスリーボーナス ' . $monthly_bonus . 'P'],
+        'ゴールド' => ['マンスリーボーナス ' . $monthly_bonus . 'P'],
+        'ダイヤモンド' => ['マンスリーボーナス ' . $monthly_bonus . 'P']
     ];
     return $base_benefits[$rank_name] ?? ['基本サービス'];
 }
+
 
 // 次のランク特典を取得
 function getNextRankBenefits($pdo, $next_rank_name) {
@@ -62,13 +68,20 @@ function getNextRankBenefits($pdo, $next_rank_name) {
     
     return [
         'ランクアップボーナス ' . number_format($next_rank['rankup_bonus']) . 'P獲得',
-        '月次ボーナス ' . $next_rank['monthly_bonus'] . 'Pに増額'
+        'マンスリーボーナス ' . $next_rank['monthly_bonus'] . 'Pに増額'
     ];
 }
 
 $rank_class = getRankClass($current_rank_name);
 $current_benefits = getCurrentRankBenefits($current_rank_name, $monthly_bonus);
 $next_count = $next_required_count ? ($next_required_count - $usage_count) : null;
+
+// ★★★ ここが修正ポイント ★★★
+// $rank_info 配列を作成
+$rank_info = [
+    'name' => $current_rank_name,
+    'class' => $rank_class
+];
 
 // 最近のポイント履歴(5件)
 $stmt = $pdo->prepare("
@@ -81,13 +94,15 @@ $stmt = $pdo->prepare("
 $stmt->execute([':tel' => $tel]);
 $recent_history = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
 // typeの表示名を取得する関数
 function getTypeDisplay($type) {
     $types = [
         'use' => ['name' => '使用', 'class' => 'use', 'icon' => 'bi-cart-fill'],
-        'refund' => ['name' => 'キャンセル返還', 'class' => 'refund', 'icon' => 'bi-arrow-counterclockwise'],
         'rankup' => ['name' => 'ランクアップ報酬', 'class' => 'rankup', 'icon' => 'bi-trophy-fill'],
-        'rank' => ['name' => 'ランクボーナス', 'class' => 'rank', 'icon' => 'bi-gift-fill']
+        'rank' => ['name' => 'ランクボーナス', 'class' => 'rank', 'icon' => 'bi-gift-fill'],
+        'refund' => ['name' => 'キャンセル返還', 'class' => 'refund', 'icon' => 'bi-arrow-counterclockwise'],
+        'signup_bonus' => ['name' => '新規登録ボーナス', 'class' => 'signup', 'icon' => 'bi-star-fill']  // ← この行を追加
     ];
     return $types[$type] ?? ['name' => $type, 'class' => 'other', 'icon' => 'bi-coin'];
 }
@@ -166,17 +181,45 @@ function getTypeDisplay($type) {
     </div>
 
     <!-- 現在のランク特典 -->
-    <div class="benefits-card">
-        <h2 class="section-title">
-            <i class="bi bi-star-fill"></i>
-            現在のランク特典
-        </h2>
-        <ul class="benefits-list">
-            <?php foreach ($current_benefits as $benefit): ?>
-            <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($benefit) ?></li>
-            <?php endforeach; ?>
-        </ul>
+<div class="benefits-card">
+    <h2 class="section-title">
+        <i class="bi bi-star-fill"></i>
+        現在のランク特典
+    </h2>
+    <ul class="benefits-list">
+        <?php foreach ($current_benefits as $benefit): ?>
+        <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($benefit) ?></li>
+        <?php endforeach; ?>
+    </ul>
+    
+    <?php if ($monthly_bonus > 0): ?>
+<div class="monthly-bonus-progress">
+    <h3 class="bonus-title">
+        <i class="bi bi-calendar-check"></i> マンスリーボーナス獲得条件
+    </h3>
+    <?php if ($monthly_remaining > 0): ?>
+    <div class="bonus-remaining">
+        <p class="bonus-text">
+            今月あと<span class="bonus-count"><?= $monthly_remaining ?></span>回のご利用で
+            <span class="bonus-points"><?= $monthly_bonus ?>P</span>獲得!
+        </p>
+        <div class="usage-status">
+            今月の利用: <strong><?= $monthly_usage_count ?>/3回</strong>
+        </div>
     </div>
+    <?php else: ?>
+    <div class="bonus-achieved">
+        <p class="achieved-text">
+            <i class="bi bi-check-circle-fill"></i> 今月の獲得条件達成済み!
+        </p>
+        <p class="achieved-detail">
+            次月初めに<strong><?= $monthly_bonus ?>P</strong>が付与されます
+        </p>
+    </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+</div>
 
     <!-- ポイント履歴(簡易版) -->
     <div class="history-card">
@@ -219,11 +262,11 @@ function getTypeDisplay($type) {
     <div class="links-card">
         <a href="rank_detail.php" class="info-link">
             <i class="bi bi-info-circle-fill"></i>
-            ランク制度について詳しく見る
+            ランク制度詳細
         </a>
     </div>
 
-</div>
+
 
 <?php include 'footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

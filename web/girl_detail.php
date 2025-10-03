@@ -315,10 +315,10 @@ function toggleFavorite(gLoginId, button) {
         if (data.success) {
             if (data.action === 'added') {
                 button.classList.add('active');
-                button.innerHTML = '★ お気に入り登録済み';
+                button.innerHTML = '♡ お気に入り登録済み';
             } else {
                 button.classList.remove('active');
-                button.innerHTML = '☆ お気に入りに追加';
+                button.innerHTML = '♡ お気に入りに追加';
             }
         } else {
             alert(data.message || 'エラーが発生しました');
