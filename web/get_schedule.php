@@ -30,7 +30,7 @@ if (!$courseTime) $courseTime = 60;
 $stmt = $pdo->prepare("SELECT in_time,out_time,LO FROM shift WHERE g_login_id=? AND DATE(in_time)=?");
 $stmt->execute([$g_login_id, $date]);
 $shift = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$shift) { echo json_encode(['no_data' => true]); exit; }
+if (!$shift) { echo json_encode([]); exit; }
 
 $LO = (int)($shift['LO'] ?? 0);
 

@@ -275,7 +275,23 @@ foreach ($cost as $item) {
 }
 ?>
 <input type="hidden" name="cost" value="<?= htmlspecialchars($total_amount) ?>">
+<?php
+// 合計金額のテーブルが終わった後に追加
 
+// 金額変動の可能性をチェック
+$price_may_change = false;
+
+if ($place === 'その他' || $place === '未定' || $area === 'その他' || $area === '未定') {
+    $price_may_change = true;
+}
+?>
+
+<?php if ($price_may_change): ?>
+<div class="price-notice">
+    <i class="bi bi-info-circle-fill"></i>
+    <p>※ 未確定の項目がある為、最終的な料金が変動する可能性がございます。</p>
+</div>
+<?php endif; ?>
 
     <div class="mb-3 text-center">
         <button type="button" class="btn btn-primary btn-lg" onclick="submitReservation()">

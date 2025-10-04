@@ -1,0 +1,416 @@
+/* ===============================
+   予約リストページスタイル
+   =============================== */
+
+/* 全体背景 */
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+  min-height: 100vh;
+}
+
+/* コンテナ */
+.reserve-list-container {
+  max-width: 56.25rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+/* ===============================
+   ページタイトル
+   =============================== */
+.reserve-list-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 0.1875rem solid #00753a;
+}
+
+/* ===============================
+   月選択プルダウン
+   =============================== */
+.month-selector {
+  background: white;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.month-selector form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.month-selector label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #003018;
+  white-space: nowrap;
+}
+
+.month-selector select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 1rem;
+  color: #333;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+  border: 0.125rem solid #00753a;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300753a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  min-width: 10rem;
+}
+
+.month-selector select:hover {
+  border-color: #003018;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 117, 58, 0.15);
+}
+
+.month-selector select:focus {
+  outline: none;
+  border-color: #003018;
+  box-shadow: 0 0 0 0.1875rem rgba(0, 117, 58, 0.2);
+}
+
+/* ===============================
+   アラートメッセージ
+   =============================== */
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin: 1.25rem 0 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 0.25rem solid #28a745;
+}
+
+/* ===============================
+   予約なしメッセージ
+   =============================== */
+.reserve-list-container > p {
+  text-align: center;
+  font-size: 1.125rem;
+  color: #666;
+  padding: 3rem 1.25rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+}
+
+/* ===============================
+   予約カードリンク
+   =============================== */
+.reserve-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.reserve-card-link:hover {
+  transform: translateY(-0.25rem);
+}
+
+/* ===============================
+   予約カード
+   =============================== */
+.reserve-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  border-left: 0.3125rem solid #00753a;
+  transition: all 0.3s ease;
+}
+
+.reserve-card:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 117, 58, 0.15);
+  border-left-color: #003018;
+}
+
+/* ===============================
+   カード左側（予約情報）
+   =============================== */
+.reserve-card-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reserve-date {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 0.25rem;
+}
+
+.reserve-time {
+  font-size: 1rem;
+  color: #00753a;
+  font-weight: 600;
+}
+
+.reserve-course {
+  font-size: 0.9375rem;
+  color: #333;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(90deg, #f0fdf4 0%, transparent 100%);
+  border-radius: 0.375rem;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.reserve-girl,
+.reserve-hotel,
+.reserve-room {
+  font-size: 0.9375rem;
+  color: #555;
+  padding-left: 0.5rem;
+  border-left: 0.125rem solid #00753a;
+}
+
+.reserve-girl {
+  font-weight: 600;
+  color: #00753a;
+}
+
+/* ===============================
+   カード右側（ステータス）
+   =============================== */
+.reserve-card-right {
+  display: flex;
+  align-items: center;
+}
+
+.reserve-status {
+  text-align: right;
+}
+
+/* ステータスバッジ共通 */
+.reserve-status span {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  border-radius: 1.875rem;
+  font-size: 0.9375rem;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 10rem;
+}
+
+/* ステータス別カラー */
+.status-pending {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border: 0.125rem solid #ef4444;
+}
+
+.status-admin {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 0.125rem solid #f59e0b;
+}
+
+.status-confirmed {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border: 0.125rem solid #10b981;
+}
+
+.status-completed {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e3a8a;
+  border: 0.125rem solid #3b82f6;
+}
+
+.status-cancelled {
+  background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+  color: #6b21a8;
+  border: 0.125rem solid #a855f7;
+}
+
+/* ===============================
+   レスポンシブ: タブレット (768px以下)
+   =============================== */
+@media (max-width: 48rem) {
+  .reserve-list-container {
+    padding: 2rem 1rem;
+  }
+
+  .reserve-list-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .reserve-card {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .reserve-date {
+    font-size: 1.125rem;
+  }
+
+  .reserve-time {
+    font-size: 0.9375rem;
+  }
+
+  .reserve-course {
+    font-size: 0.875rem;
+  }
+
+  .reserve-status span {
+    min-width: 9rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* ===============================
+   レスポンシブ: スマホ (480px以下)
+   =============================== */
+@media (max-width: 30rem) {
+  body {
+    background: #f5f7fa;
+  }
+
+  .reserve-list-container {
+    padding: 1.25rem 0.625rem;
+  }
+
+  .reserve-list-container h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .month-selector {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .month-selector form {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .month-selector select {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .alert {
+    padding: 0.875rem 1rem;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .reserve-card-link {
+    margin-bottom: 1.25rem;
+  }
+
+  /* カードを縦積みに */
+  .reserve-card {
+    flex-direction: column;
+    padding: 1.25rem;
+    gap: 1rem;
+    border-left-width: 0.25rem;
+  }
+
+  .reserve-card-left {
+    gap: 0.625rem;
+  }
+
+  .reserve-date {
+    font-size: 1.0625rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .reserve-time {
+    font-size: 0.875rem;
+  }
+
+  .reserve-course {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.625rem;
+    margin-top: 0.25rem;
+  }
+
+  .reserve-girl,
+  .reserve-hotel,
+  .reserve-room {
+    font-size: 0.875rem;
+    padding-left: 0.375rem;
+    border-left-width: 0.125rem;
+  }
+
+  /* ステータスを全幅に */
+  .reserve-card-right {
+    width: 100%;
+  }
+
+  .reserve-status {
+    width: 100%;
+    text-align: center;
+  }
+
+  .reserve-status span {
+    display: block;
+    width: 100%;
+    min-width: auto;
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+  }
+
+  /* 予約なしメッセージ */
+  .reserve-list-container > p {
+    font-size: 1rem;
+    padding: 2.5rem 1rem;
+  }
+}
+
+/* ===============================
+   アニメーション
+   =============================== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reserve-card-link {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* 各カードを順番にアニメーション */
+.reserve-card-link:nth-child(1) { animation-delay: 0s; }
+.reserve-card-link:nth-child(2) { animation-delay: 0.1s; }
+.reserve-card-link:nth-child(3) { animation-delay: 0.2s; }
+.reserve-card-link:nth-child(4) { animation-delay: 0.3s; }
+.reserve-card-link:nth-child(5) { animation-delay: 0.4s; }

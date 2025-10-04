@@ -111,6 +111,14 @@ $out_time_fmt = date('H:i', strtotime($out_time));
 $c_name = $reserve['c_name'];
 $course_time = $reserve['course_time'];
 $g_name = $reserve['g_name'];
+
+// フリーコースかどうかを判定
+$stmt_free = $pdo->prepare("SELECT free_check FROM course WHERE c_name = :c_name");
+$stmt_free->execute([':c_name' => $c_name]);
+$courseData = $stmt_free->fetch(PDO::FETCH_ASSOC);
+$isFreeCheck = $courseData ? (int)$courseData['free_check'] : 0;
+
+
 $place = $reserve['place'];
 $place_comment = $reserve['place_comment'];
 $area = $reserve['area'];
@@ -148,6 +156,8 @@ if (isset($_SESSION['cancel_error'])) {
     unset($_SESSION['cancel_error']);
 }
 ?>
+<!--オリジナルCSS-->
+<link href="./css/reserve_list_up.css" rel="stylesheet">
 
 <div class="reserve-detail-container">
     <h1>予約詳細</h1>
@@ -300,12 +310,17 @@ while($area_row = $area_stmt->fetch(PDO::FETCH_ASSOC)) {
                 <td>コース時間</td>
                 <td><?= htmlspecialchars($course_time, ENT_QUOTES, 'UTF-8') ?>分</td>
             </tr>
-            <?php if (!empty($g_name)): ?>
-            <tr>
-                <td>ご指名</td>
-                <td><?= htmlspecialchars($g_name, ENT_QUOTES, 'UTF-8') ?></td>
-            </tr>
-            <?php endif; ?>
+            <?php if ($isFreeCheck === 1): ?>
+<tr>
+    <td>ご指名</td>
+    <td>フリー</td>
+</tr>
+<?php elseif (!empty($g_name)): ?>
+<tr>
+    <td>ご指名</td>
+    <td><?= htmlspecialchars($g_name, ENT_QUOTES, 'UTF-8') ?></td>
+</tr>
+<?php endif; ?>
             <tr>
                 <td>ご利用場所</td>
                 <td><?= htmlspecialchars($place, ENT_QUOTES, 'UTF-8') ?></td>

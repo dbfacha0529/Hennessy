@@ -30,15 +30,15 @@ try {
         exit;
     }
 
-    $courseMinutes = (int)$courseData['time']; // timeカラムから分単位で取得
-    $prepTime = 10; // 前後10分
+    $courseMinutes = (int)$courseData['time'];
+    $prepTime = 10;
 
-    // シフト取得（get_schedule.phpと同じ方式）
-$sql = "SELECT * FROM shift WHERE DATE(in_time) = :date";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':date', $date, PDO::PARAM_STR);
-$stmt->execute();
-$shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // シフト取得(get_schedule.phpと同じ方式)
+    $sql = "SELECT * FROM shift WHERE DATE(in_time) = :date";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':date', $date, PDO::PARAM_STR);
+    $stmt->execute();
+    $shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // シフトデータがない場合
     if (empty($shifts)) {
@@ -46,36 +46,46 @@ $shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
         exit;
     }
 
-    // 予約取得
-    $sql = "SELECT * FROM reserve WHERE date = :date AND done != 5";
+    // 予約取得(get_schedule.phpと同じ方式)
+    $sql = "SELECT * FROM reserve WHERE 
+            (DATE(start_time) = :date OR DATE(start_time) = DATE_ADD(:date2, INTERVAL 1 DAY))
+            AND done != 5";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':date', $date, PDO::PARAM_STR);
+    $stmt->bindValue(':date2', $date, PDO::PARAM_STR);
     $stmt->execute();
     $reserves = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // シフトから最小開始時刻と最大終了時刻を取得
+    $shiftStartTimes = [];
+    $shiftEndTimes = [];
     
-// 30分刻みのスロット生成
-$slotStart = new DateTime($date . ' 17:00');
-$slotEnd = new DateTime($date . ' 03:00');
-$slotEnd->modify('+1 day'); // 翌日3:00まで
+    foreach ($shifts as $shift) {
+        $shiftStartTimes[] = new DateTime($shift['in_time']);
+        $shiftEndTimes[] = new DateTime($shift['out_time']);
+    }
+    
+    $slotStart = min($shiftStartTimes);
+    $slotEnd = max($shiftEndTimes);
 
-// 現在時刻を取得し、表示開始時刻を調整（get_schedule.phpと同じ）
-$now = new DateTime();
-$displayStart = max($slotStart, $now);
-$minutes = (int)$displayStart->format('i');
-if ($minutes % 30 !== 0) {
-    $displayStart->modify('+' . (30 - $minutes % 30) . ' minutes');
-}
+    // 現在時刻を取得し、表示開始時刻を調整
+    $now = new DateTime();
+    $displayStart = max($slotStart, $now);
+    $minutes = (int)$displayStart->format('i');
+    if ($minutes % 30 !== 0) {
+        $displayStart->modify('+' . (30 - $minutes % 30) . ' minutes');
+    }
 
-$slots = [];
-$current = clone $displayStart; // slotStartではなくdisplayStartから
-while ($current <= $slotEnd) {
-    $slots[] = clone $current;
-    $current->modify('+30 minutes');
-}
-    // 空き計算
+    // 30分刻みのスロット生成
+    $slots = [];
+    $current = clone $displayStart;
+    while ($current <= $slotEnd) {
+        $slots[] = clone $current;
+        $current->modify('+30 minutes');
+    }
+
     $availability = [];
-    $y = $courseMinutes + 2 * $prepTime; // コース時間 + 前後準備20分
+    $y = $courseMinutes + 2 * $prepTime;
 
     foreach ($slots as $slot) {
         $slotKey = $slot->format('H:i');
@@ -87,7 +97,7 @@ while ($current <= $slotEnd) {
         foreach ($shifts as $shift) {
             $shiftIn = new DateTime($shift['in_time']);
             $shiftOut = new DateTime($shift['out_time']);
-            $LO = $shift['LO'];
+            $LO = (int)($shift['LO'] ?? 0);
 
             // 前準備10分考慮
             $shiftInPrep = clone $shiftIn;
@@ -96,10 +106,10 @@ while ($current <= $slotEnd) {
             // 1. 始業前準備チェック
             if ($slot < $shiftInPrep) continue;
 
-            // 2. 終了時間シフトチェック（LO=1は無視）
-            if ($LO == 0 && $slotEndTime > $shiftOut) continue;
+            // 2. 終了時間シフトチェック(LO=1は無視)
+            if ($LO === 0 && $slotEndTime > $shiftOut) continue;
 
-            // 3. 予約チェック（重複しないか）
+            // 3. 予約チェック(重複しないか)
             $conflict = false;
             foreach ($reserves as $res) {
                 if ($res['g_login_id'] != $shift['g_login_id']) continue;
@@ -124,9 +134,8 @@ while ($current <= $slotEnd) {
     }
 
     echo json_encode($availability);
-    
 
 } catch (Exception $e) {
-    echo json_encode([]);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 ?>

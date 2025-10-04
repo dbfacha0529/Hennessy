@@ -1,0 +1,435 @@
+/* ===============================
+   予約完了ページスタイル
+   =============================== */
+
+/* 全体背景 */
+body {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+  min-height: 100vh;
+}
+
+/* コンテナ */
+.container {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+/* ===============================
+   完了ヘッダー
+   =============================== */
+.completion-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 117, 58, 0.1);
+}
+
+.success-icon {
+  margin-bottom: 1.25rem;
+}
+
+.success-icon i {
+  font-size: 4.5rem;
+  color: #00753a;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.completion-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 1rem;
+}
+
+.sub-message {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ===============================
+   予約内容・支払い詳細セクション
+   =============================== */
+.reservation-details,
+.payment-details {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.reservation-details h2,
+.payment-details h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 0.1875rem solid #00753a;
+}
+
+/* ===============================
+   テーブルスタイル
+   =============================== */
+.details-table,
+.payment-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.details-table tr,
+.payment-table tr {
+  border-bottom: 0.0625rem solid #f0f0f0;
+}
+
+.details-table tr:last-child,
+.payment-table tr:last-child {
+  border-bottom: none;
+}
+
+.details-table td,
+.payment-table td {
+  padding: 1rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* 項目ラベル */
+.details-table td.label,
+.payment-table td:first-child {
+  font-weight: 600;
+  color: #00753a;
+  width: 35%;
+  background: linear-gradient(90deg, #f0fdf4 0%, transparent 100%);
+}
+
+/* 内容 */
+.details-table td:last-child,
+.payment-table td:last-child {
+  color: #333;
+}
+
+.details-table td small {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* ===============================
+   支払い金額テーブル
+   =============================== */
+.payment-table td.amount {
+  text-align: right;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.payment-table tr.total-row {
+  background: linear-gradient(90deg, #e8f5e9 0%, #f1f8f4 100%);
+  border-top: 0.125rem solid #00753a;
+  border-bottom: 0.125rem solid #00753a;
+}
+
+.payment-table tr.total-row td {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #003018;
+  padding: 1.25rem 0.75rem;
+}
+
+/* ===============================
+   ボタンエリア
+   =============================== */
+.button-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  padding: 1rem 2rem;
+  border-radius: 0.625rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+  color: white;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 117, 58, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 1rem rgba(0, 117, 58, 0.4);
+  color: white;
+}
+
+.btn-secondary {
+  background: white;
+  color: #00753a;
+  border: 0.125rem solid #00753a;
+}
+
+.btn-secondary:hover {
+  background: #00753a;
+  color: white;
+  transform: translateY(-0.125rem);
+}
+
+.btn-lg {
+  padding: 1.125rem 2.5rem;
+  font-size: 1.25rem;
+}
+
+/* ===============================
+   料金変動注意書き（共通化）
+   =============================== */
+.price-notice {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border-left: 0.25rem solid #f59e0b;
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(245, 158, 11, 0.15);
+}
+
+.price-notice i {
+  font-size: 1.5rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.price-notice p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* ===============================
+   レスポンシブ: タブレット (768px以下)
+   =============================== */
+@media (max-width: 48rem) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .completion-header {
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .success-icon i {
+    font-size: 3.75rem;
+  }
+
+  .completion-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .sub-message {
+    font-size: 0.9375rem;
+  }
+
+  .reservation-details,
+  .payment-details {
+    padding: 1.5rem;
+  }
+
+  .reservation-details h2,
+  .payment-details h2 {
+    font-size: 1.375rem;
+  }
+
+  .details-table td,
+  .payment-table td {
+    padding: 0.875rem 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  .details-table td.label,
+  .payment-table td:first-child {
+    width: 40%;
+  }
+
+  .payment-table tr.total-row td {
+    font-size: 1.125rem;
+  }
+
+  .btn {
+    font-size: 1.0625rem;
+  }
+
+  .btn-lg {
+    font-size: 1.125rem;
+  }
+}
+
+/* ===============================
+   レスポンシブ: スマホ (480px以下)
+   =============================== */
+@media (max-width: 30rem) {
+  body {
+    background: #f0fdf4;
+  }
+
+  .container {
+    padding: 1.25rem 0.625rem;
+  }
+
+  .completion-header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .success-icon i {
+    font-size: 3rem;
+  }
+
+  .completion-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .sub-message {
+    font-size: 0.875rem;
+  }
+
+  .reservation-details,
+  .payment-details {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .reservation-details h2,
+  .payment-details h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* テーブルを縦積みに */
+  .details-table tr,
+  .payment-table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 0.0625rem solid #e0e0e0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .details-table td,
+  .payment-table td {
+    display: block;
+    width: 100% !important;
+    padding: 0.75rem 1rem;
+    border-bottom: 0.0625rem solid #f5f5f5;
+  }
+
+  .details-table td:last-child,
+  .payment-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* 項目ラベル */
+  .details-table td.label,
+  .payment-table td:first-child {
+    background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+    color: white;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+  }
+
+  /* 内容 */
+  .details-table td:last-child,
+  .payment-table td:last-child {
+    background: white;
+    font-size: 0.9375rem;
+  }
+
+  .payment-table td.amount {
+    text-align: left;
+    font-size: 1rem;
+  }
+
+  /* 合計行 */
+  .payment-table tr.total-row {
+    background: white;
+    border: 0.125rem solid #00753a;
+    margin-top: 1rem;
+  }
+
+  .payment-table tr.total-row td:first-child {
+    font-size: 0.9375rem;
+  }
+
+  .payment-table tr.total-row td:last-child {
+    background: linear-gradient(90deg, #e8f5e9 0%, #f1f8f4 100%);
+    font-size: 1.375rem;
+    font-weight: bold;
+    color: #003018;
+  }
+
+  /* ボタンエリア */
+  .button-area {
+    gap: 0.875rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 0.9375rem 1.25rem;
+  }
+
+  .btn-lg {
+    font-size: 1.0625rem;
+    padding: 1rem 1.25rem;
+  }
+
+  /* 注意書き */
+  .price-notice {
+    padding: 1rem;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+
+  .price-notice i {
+    font-size: 1.25rem;
+  }
+
+  .price-notice p {
+    font-size: 0.8125rem;
+  }
+}

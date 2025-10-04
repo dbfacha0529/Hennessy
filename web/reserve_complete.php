@@ -53,8 +53,18 @@ $date_fmt = (new DateTime($date))->format('Y年n月j日（')
            . $weekdays[(new DateTime($date))->format('w')] 
            . '）';
 $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
-?>
 
+
+
+// 金額変動の可能性をチェック
+$price_may_change = false;
+if ($place === 'その他' || $place === '未定' || $area === 'その他' || $area === '未定') {
+    $price_may_change = true;
+}
+
+?>
+ <!--オリジナルCSS-->
+  <link href="./css/reserve_complete.css" rel="stylesheet">
 <div class="container">
     <div class="completion-header">
         <div class="success-icon">
@@ -127,6 +137,13 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
         </table>
     </div>
 
+
+        <!-- ボタンエリアを予約内容の直後に移動 -->
+    <div class="button-area">
+        <a href="reserve_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
+        <a href="home.php" class="btn btn-secondary btn-lg">ホームに戻る</a>
+    </div>
+
     <!-- 支払い金額テーブル -->
     <div class="payment-details">
         <h2>お支払い金額</h2>
@@ -158,12 +175,14 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
     </tr>
 <?php endif; ?>
     </div>
-
-    <!-- ボタンエリア -->
-    <div class="button-area">
-        <a href="reserve_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
-        <a href="home.php" class="btn btn-secondary btn-lg">ホームに戻る</a>
+<!-- 料金変動注意書き -->
+    <?php if ($price_may_change): ?>
+    <div class="price-notice">
+        <i class="bi bi-info-circle-fill"></i>
+        <p>※ ご利用場所・エリアが「その他」または「未定」の場合、最終的な料金が変動する可能性がございます。</p>
     </div>
+    <?php endif; ?>
+   
 </div>
 
 <?php include 'footer.php'; ?>

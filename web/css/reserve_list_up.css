@@ -1,32 +1,595 @@
-.payment-detail {
-    display: none; /* 追加 */
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+/* ===============================
+   予約詳細ページスタイル
+   =============================== */
+
+/* 全体背景 */
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+  min-height: 100vh;
 }
 
-.payment-detail.open {
-    display: block; /* 追加 */
-    max-height: 1000px;
-    padding: 20px;
+/* コンテナ */
+.reserve-detail-container {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
 }
-/* エリア選択の警告メッセージ */
+
+/* ===============================
+   ページタイトル
+   =============================== */
+.reserve-detail-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 2rem;
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 0.1875rem solid #00753a;
+}
+
+/* ===============================
+   メッセージ
+   =============================== */
+.success-message {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 0.25rem solid #10b981;
+  font-weight: 500;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 0.25rem solid #ef4444;
+}
+
 .alert-warning {
-    background-color: #fff3cd;
-    border: 1px solid #ffc107;
-    border-radius: 8px;
-    padding: 12px 15px;
-    color: #856404;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  border-left: 0.25rem solid #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .alert-warning i {
-    font-size: 1.2em;
-    color: #ffc107;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
-.alert-warning strong {
-    font-weight: bold;
+/* ===============================
+   フォームセクション（上部・下部）
+   =============================== */
+.hotel-form-top,
+.hotel-form-bottom,
+.admin-waiting {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  border-left: 0.3125rem solid #00753a;
+}
+
+.hotel-form-top h2,
+.hotel-form-bottom h2,
+.admin-waiting h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 1.5rem;
+}
+
+/* 管理者対応待ち */
+.admin-waiting {
+  text-align: center;
+  border-left-color: #f59e0b;
+}
+
+.admin-waiting h2 {
+  color: #92400e;
+}
+
+.admin-waiting p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.admin-waiting p.notice {
+  background: #fef3c7;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* ===============================
+   フォーム
+   =============================== */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.required {
+  color: #ef4444;
+  font-weight: bold;
+  margin-left: 0.25rem;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 0.125rem solid #d1d5db;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #00753a;
+  box-shadow: 0 0 0 0.1875rem rgba(0, 117, 58, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 5rem;
+  font-family: inherit;
+}
+
+/* ===============================
+   ボタン
+   =============================== */
+.btn-submit {
+  background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+  color: white;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 117, 58, 0.3);
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-submit:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 1rem rgba(0, 117, 58, 0.4);
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0.25rem 0.75rem rgba(239, 68, 68, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-cancel:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 1rem rgba(239, 68, 68, 0.4);
+}
+
+/* ===============================
+   キャンセルセクション
+   =============================== */
+.cancel-section {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border: 0.125rem solid #f59e0b;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* ===============================
+   予約詳細テーブル
+   =============================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+table thead {
+  background: linear-gradient(135deg, #003018 0%, #00503d 100%);
+}
+
+table thead th {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 1.25rem 1rem;
+  text-align: left;
+}
+
+table tbody tr {
+  border-bottom: 0.0625rem solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+table tbody tr:hover {
+  background-color: #f8fdf9;
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table tbody td {
+  padding: 1rem;
+  font-size: 0.9375rem;
+}
+
+table tbody td:first-child {
+  font-weight: 600;
+  color: #00753a;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+  width: 30%;
+}
+
+table tbody td:last-child {
+  color: #333;
+}
+
+/* ===============================
+   支払い金額サマリー
+   =============================== */
+.payment-summary {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.payment-header {
+  background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payment-total-line {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.payment-total-line .label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+}
+
+.payment-total-line .amount {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: white;
+}
+
+.detail-toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 0.125rem solid white;
+  padding: 0.5rem 1.25rem;
+  border-radius: 1.875rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.detail-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+/* 詳細表示エリア */
+.payment-detail {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.payment-detail.open {
+  display: block;
+  max-height: 62.5rem;
+  padding: 1.25rem;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.breakdown-table tbody tr {
+  border-bottom: 0.0625rem solid #f0f0f0;
+}
+
+.breakdown-table tbody tr:last-child,
+.breakdown-table tbody tr.total-row {
+  border-bottom: none;
+}
+
+.breakdown-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.breakdown-table .item-name {
+  color: white;
+  background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+  font-weight: 600;
+}
+
+.breakdown-table .item-amount {
+  text-align: right;
+  font-weight: 600;
+}
+
+.breakdown-table .positive {
+  color: #333;
+}
+
+.breakdown-table .negative {
+  color: #ef4444;
+}
+
+.breakdown-table .total-row {
+  background: linear-gradient(90deg, #e8f5e9 0%, #f1f8f4 100%);
+  border-top: 0.125rem solid #00753a;
+}
+
+.breakdown-table .total-row td {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #003018;
+  padding: 1rem;
+}
+
+.breakdown-table .no-data {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
+
+/* ===============================
+   戻るリンク
+   =============================== */
+.back-link {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.back-link a {
+  display: inline-block;
+  color: #00753a;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  border: 0.125rem solid #00753a;
+  border-radius: 1.875rem;
+  transition: all 0.3s ease;
+}
+
+.back-link a:hover {
+  background: #00753a;
+  color: white;
+  transform: translateY(-0.125rem);
+}
+
+/* ===============================
+   レスポンシブ: タブレット (768px以下)
+   =============================== */
+@media (max-width: 48rem) {
+  .reserve-detail-container {
+    padding: 2rem 1rem;
+  }
+
+  .reserve-detail-container h1 {
+    font-size: 1.75rem;
+  }
+
+  .hotel-form-top,
+  .hotel-form-bottom,
+  .admin-waiting {
+    padding: 1.5rem;
+  }
+
+  .payment-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .payment-total-line {
+    justify-content: space-between;
+  }
+
+  .detail-toggle-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  table tbody td:first-child {
+    width: 35%;
+  }
+}
+
+/* ===============================
+   レスポンシブ: スマホ (480px以下)
+   =============================== */
+@media (max-width: 30rem) {
+  body {
+    background: #f5f7fa;
+  }
+
+  .reserve-detail-container {
+    padding: 1.25rem 0.625rem;
+  }
+
+  .reserve-detail-container h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hotel-form-top,
+  .hotel-form-bottom,
+  .admin-waiting {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .hotel-form-top h2,
+  .hotel-form-bottom h2,
+  .admin-waiting h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    font-size: 0.9375rem;
+  }
+
+  .btn-submit {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* テーブルを縦積みに */
+  table thead {
+    display: none;
+  }
+
+  table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    border: 0.0625rem solid #e0e0e0;
+    border-radius: 0.625rem;
+    overflow: hidden;
+  }
+
+  table tbody td {
+    display: block;
+    width: 100% !important;
+    padding: 0.75rem 1rem;
+    border-bottom: 0.0625rem solid #f5f5f5;
+  }
+
+  table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  table tbody td:first-child {
+    background: linear-gradient(135deg, #003018 0%, #00503d 100%);
+    color: white;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  table tbody td:last-child {
+    background: white;
+    font-size: 0.9375rem;
+  }
+
+  /* 支払いサマリー */
+  .payment-total-line {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .payment-total-line .label {
+    font-size: 1rem;
+  }
+
+  .payment-total-line .amount {
+    font-size: 1.5rem;
+  }
+
+  .breakdown-table td {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .breakdown-table .total-row td {
+    font-size: 1rem;
+  }
+
+  /* キャンセルセクション */
+  .cancel-section {
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .btn-cancel {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.9375rem;
+  }
+
+  /* 戻るリンク */
+  .back-link a {
+    display: block;
+    width: 100%;
+  }
 }

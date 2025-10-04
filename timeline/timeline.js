@@ -16,47 +16,102 @@ class Timeline {
     }
     
     init() {
-        // フィルター変更イベント
-        document.getElementById('filterType').addEventListener('change', (e) => {
-            this.filter = e.target.value;
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlFilter = urlParams.get('filter');
+        const urlGLoginId = urlParams.get('g_login_id');
+        
+        // URLパラメータがある場合は優先的に設定
+        if (urlFilter && urlGLoginId) {
+            this.filter = urlFilter;
+            this.gLoginId = urlGLoginId;
+        }
+        
+        // DOMが完全に読み込まれてから実行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupEventListeners();
+                this.setupUI();
+                this.setupInfiniteScroll();
+                this.setupPullToRefresh();
+                this.loadPosts();
+            });
+        } else {
+            this.setupEventListeners();
+            this.setupUI();
+            this.setupInfiniteScroll();
+            this.setupPullToRefresh();
+            this.loadPosts();
+        }
+    }
+    
+    setupEventListeners() {
+        const filterType = document.getElementById('filterType');
+        const girlSelect = document.getElementById('girlSelect');
+        
+        if (filterType) {
+            filterType.addEventListener('change', (e) => {
+                this.filter = e.target.value;
+                
+                if (this.filter === 'girl') {
+                    document.getElementById('girlSelectWrapper').style.display = 'block';
+                } else {
+                    document.getElementById('girlSelectWrapper').style.display = 'none';
+                    this.gLoginId = null;
+                    this.resetAndLoad();
+                }
+            });
+        }
+        
+        if (girlSelect) {
+            girlSelect.addEventListener('change', (e) => {
+                this.gLoginId = e.target.value;
+                if (this.gLoginId) {
+                    this.resetAndLoad();
+                }
+            });
+        }
+    }
+    
+    setupUI() {
+        const filterSelect = document.getElementById('filterType');
+        const girlSelect = document.getElementById('girlSelect');
+        const girlWrapper = document.getElementById('girlSelectWrapper');
+        
+        if (!filterSelect || !girlSelect || !girlWrapper) return;
+        
+        // URLパラメータがある場合はUIに反映
+        if (this.filter && this.gLoginId) {
+            // フィルタータイプを設定
+            filterSelect.value = this.filter;
             
+            // 女の子フィルターの場合
             if (this.filter === 'girl') {
-                document.getElementById('girlSelectWrapper').style.display = 'block';
-            } else {
-                document.getElementById('girlSelectWrapper').style.display = 'none';
-                this.resetAndLoad();
+                // 女の子選択エリアを表示
+                girlWrapper.style.display = 'block';
+                
+                // 女の子を選択
+                girlSelect.value = this.gLoginId;
             }
-        });
-        
-        document.getElementById('girlSelect').addEventListener('change', (e) => {
-            this.gLoginId = e.target.value;
-            if (this.gLoginId) {
-                this.resetAndLoad();
-            }
-        });
-        
-        // 無限スクロール
-        this.setupInfiniteScroll();
-        
-        // Pull-to-Refresh
-        this.setupPullToRefresh();
-        
-        // 初回読み込み
-        this.loadPosts();
+        }
     }
     
     setupInfiniteScroll() {
+        const trigger = document.getElementById('loadMoreTrigger');
+        if (!trigger) return;
+        
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !this.loading && this.hasMore) {
                 this.loadPosts();
             }
         }, { threshold: 0.1 });
         
-        observer.observe(document.getElementById('loadMoreTrigger'));
+        observer.observe(trigger);
     }
     
     setupPullToRefresh() {
         const container = document.querySelector('.timeline-container');
+        if (!container) return;
         
         container.addEventListener('touchstart', (e) => {
             if (window.scrollY === 0) {
@@ -177,7 +232,6 @@ class Timeline {
         postEl.className = 'post-card';
         postEl.dataset.postId = post.id;
         
-        // アイコン画像（クリック可能）
         const avatarImg = post.girl_img 
             ? `<img src="../img/${this.escapeHtml(post.girl_img)}" class="post-avatar clickable" alt="${this.escapeHtml(post.girl_name)}" data-g-login-id="${this.escapeHtml(post.g_login_id)}">`
             : `<div class="post-avatar clickable" style="background: #ddd; display: flex; align-items: center; justify-content: center;" data-g-login-id="${this.escapeHtml(post.g_login_id)}">👤</div>`;
@@ -229,7 +283,6 @@ class Timeline {
             </div>
         `;
         
-        // クリックイベントを追加
         const clickableElements = postEl.querySelectorAll('.clickable');
         clickableElements.forEach(el => {
             el.addEventListener('click', () => {
@@ -268,8 +321,6 @@ class Timeline {
                 }
                 
                 count.textContent = data.like_count;
-            } else {
-                console.error('いいねエラー:', data.error);
             }
         } catch (error) {
             console.error('いいねエラー:', error);
@@ -292,5 +343,10 @@ class Timeline {
     }
 }
 
-// 初期化
-const timeline = new Timeline();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.timeline = new Timeline();
+    });
+} else {
+    window.timeline = new Timeline();
+}

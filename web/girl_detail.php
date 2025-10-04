@@ -25,29 +25,95 @@ if (!$girl) {
 
 // 基準日取得
 $baseDate = getBaseDate();
+$now = new DateTime();
 
 // 今日のシフト情報取得
-$sqlToday = "SELECT out_time FROM shift WHERE g_login_id = :g_login_id AND date = :base_date LIMIT 1";
+$sqlToday = "SELECT in_time, out_time, LO FROM shift WHERE g_login_id = :g_login_id AND date = :base_date LIMIT 1";
 $stmtToday = $pdo->prepare($sqlToday);
 $stmtToday->bindValue(':g_login_id', $g_login_id, PDO::PARAM_STR);
 $stmtToday->bindValue(':base_date', $baseDate, PDO::PARAM_STR);
 $stmtToday->execute();
 $todayShift = $stmtToday->fetch(PDO::FETCH_ASSOC);
 
-$displayTime = '';
-if ($todayShift && !empty($todayShift['out_time'])) {
-    // TIME型またはDATETIME型から時刻部分を抽出
-    $timeStr = $todayShift['out_time'];
-    if (strpos($timeStr, ' ') !== false) {
-        // DATETIME形式の場合（例: "2025-01-01 21:00:00"）
-        $timeStr = substr($timeStr, 11, 5); // "21:00"を抽出
-    } else {
-        // TIME形式の場合（例: "21:00:00"）
-        $timeStr = substr($timeStr, 0, 5); // "21:00"を抽出
+// 予約データ取得
+$sql_reserve = "SELECT * FROM reserve WHERE date = :date AND g_login_id = :g_login_id";
+$stmt_reserve = $pdo->prepare($sql_reserve);
+$stmt_reserve->bindValue(':date', $baseDate, PDO::PARAM_STR);
+$stmt_reserve->bindValue(':g_login_id', $g_login_id, PDO::PARAM_STR);
+$stmt_reserve->execute();
+$reserves = $stmt_reserve->fetchAll(PDO::FETCH_ASSOC);
+
+// ステータスと時間表示の判定 (home.phpと同じロジック)
+$status_label = '';
+$time_label = '';
+$has_today_shift = false;
+
+if ($todayShift) {
+    $has_today_shift = true;
+    $shift_in = new DateTime($todayShift['in_time']);
+    $shift_out = new DateTime($todayShift['out_time']);
+    $LO = (int)$todayShift['LO'];
+    
+    // 出勤が終了しているかチェック
+    $is_shift_ended = ($now >= $shift_out);
+    
+    if (!$is_shift_ended) {
+        // 「今すぐOK」判定
+        $course_time = 60;
+        $prep_time = 10;
+        $total_time = $course_time + 2 * $prep_time;
+        
+        $slot_start = clone $now;
+        $slot_end = clone $now;
+        $slot_end->modify("+{$total_time} minutes");
+        
+        $shift_in_prep = clone $shift_in;
+        $shift_in_prep->modify('-10 minutes');
+        
+        $is_available = true;
+        
+        // シフト開始前チェック
+        if ($slot_start < $shift_in_prep) {
+            $is_available = false;
+        }
+        
+        // シフト終了時間チェック
+        if ($LO == 0 && $slot_end > $shift_out) {
+            $is_available = false;
+        }
+        
+        // 予約重複チェック
+        if ($is_available) {
+            foreach ($reserves as $res) {
+                $res_start = new DateTime($res['start_time']);
+                $res_end = new DateTime($res['end_time']);
+                
+                if (!($slot_end <= $res_start || $slot_start >= $res_end)) {
+                    $is_available = false;
+                    break;
+                }
+            }
+        }
+        
+        if ($is_available) {
+            $status_label = '今すぐOK';
+        } else {
+            $status_label = 'Today';
+        }
+        
+        // 時間表示判定
+        $is_working = ($now >= $shift_in && $now < $shift_out);
+        
+        if ($is_working) {
+            $time_label = '～' . $shift_out->format('H:i');
+        } elseif ($now < $shift_in) {
+            $time_label = $shift_in->format('H:i') . '～';
+        }
     }
-    $displayTime = '～' . $timeStr;
-} else {
-    // 直近未来の出勤日
+}
+
+// 本日シフトがない場合、直近未来の出勤日を取得
+if (!$has_today_shift || empty($time_label)) {
     $sqlNext = "SELECT date FROM shift WHERE g_login_id = :g_login_id AND date > :base_date ORDER BY date ASC LIMIT 1";
     $stmtNext = $pdo->prepare($sqlNext);
     $stmtNext->bindValue(':g_login_id', $g_login_id, PDO::PARAM_STR);
@@ -55,9 +121,9 @@ if ($todayShift && !empty($todayShift['out_time'])) {
     $stmtNext->execute();
     $nextShift = $stmtNext->fetch(PDO::FETCH_ASSOC);
     
-    if ($nextShift) {
+    if ($nextShift && empty($time_label)) {
         $date = new DateTime($nextShift['date']);
-        $displayTime = $date->format('n/j');
+        $time_label = $date->format('n/j');
     }
 }
 
@@ -102,29 +168,50 @@ for ($i = 0; $i < 7; $i++) {
     ];
 }
 
-// タイムライン最新1件取得（後で実装）
-$latestPost = null;
+// タイムライン最新1件取得
+$sqlTimeline = "SELECT * FROM timeline_posts WHERE g_login_id = :g_login_id ORDER BY created_at DESC LIMIT 1";
+$stmtTimeline = $pdo->prepare($sqlTimeline);
+$stmtTimeline->bindValue(':g_login_id', $g_login_id, PDO::PARAM_STR);
+$stmtTimeline->execute();
+$latestPost = $stmtTimeline->fetch(PDO::FETCH_ASSOC);
+
+// 投稿がある場合、メディアを取得
+$latestMedia = [];
+if ($latestPost) {
+    $sqlMedia = "SELECT * FROM timeline_media WHERE post_id = :post_id ORDER BY sort_order ASC";
+    $stmtMedia = $pdo->prepare($sqlMedia);
+    $stmtMedia->bindValue(':post_id', $latestPost['id'], PDO::PARAM_INT);
+    $stmtMedia->execute();
+    $latestMedia = $stmtMedia->fetchAll(PDO::FETCH_ASSOC);
+}
 
 ?>
 
 <link href="./css/girl_detail.css" rel="stylesheet">
 
 <div class="container">
-    <!-- 上部カード -->
-    <div class="top-card">
-        <div class="info-left">
-            <span class="girl-name"><?= htmlspecialchars($girl['name']) ?></span>
-            <span class="girl-age"><?= htmlspecialchars($girl['age']) ?>歳</span>
-            <span class="girl-size">B<?= htmlspecialchars($girl['b']) ?></span>
-            <span class="girl-size">W<?= htmlspecialchars($girl['w']) ?></span>
-            <span class="girl-size">H<?= htmlspecialchars($girl['h']) ?></span>
-        </div>
-        <?php if (!empty($displayTime)): ?>
-            <div class="info-right">
-                <span class="shift-time"><?= htmlspecialchars($displayTime) ?></span>
+    <!-- 上部カード (home.phpと同じスタイル) -->
+    <a href="girl_detail.php?g_login_id=<?= urlencode($g_login_id) ?>" class="gcard-link">
+        <div class="gcard">
+            <img class="gcardimg" src="../img/<?= htmlspecialchars($girl['img']) ?>" alt="<?= htmlspecialchars($girl['name']) ?>">
+            
+            <div class="gcard-center">
+                <span class="name"><?= htmlspecialchars($girl['name']) ?></span>
+                <span class="headcomment"><?= htmlspecialchars($girl['head_comment']) ?></span>
             </div>
-        <?php endif; ?>
-    </div>
+            
+            <div class="gcard-right">
+                <?php if ($status_label): ?>
+                <span class="status status-<?= $status_label === '今すぐOK' ? 'now' : 'today' ?>">
+                    <?= htmlspecialchars($status_label) ?>
+                </span>
+                <?php endif; ?>
+                <?php if ($time_label): ?>
+                <span class="time"><?= htmlspecialchars($time_label) ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+    </a>
 
     <!-- 画像スライドショー -->
     <?php if (!empty($images)): ?>
@@ -151,21 +238,70 @@ $latestPost = null;
         <button class="favorite-btn-large <?= $isFavorite ? 'active' : '' ?>" 
                 onclick="toggleFavorite('<?= htmlspecialchars($g_login_id) ?>', this)">
             <?php if ($isFavorite): ?>
-                ★ お気に入り登録済み
+                ♡ お気に入り登録済み
             <?php else: ?>
-                ☆ お気に入りに追加
+                ♡ お気に入りに追加
             <?php endif; ?>
         </button>
+    </div>
+
+    <!-- スタイル表示 -->
+    <div class="section style-section">
+        <h3 class="section-title">スタイル</h3>
+        <div class="style-display">
+            <div class="style-item">
+                <span class="style-label">年齢</span>
+                <span class="style-value"><?= htmlspecialchars($girl['age']) ?>歳</span>
+            </div>
+            <div class="style-item">
+                <span class="style-label">身長</span>
+                <span class="style-value"><?= htmlspecialchars($girl['high']) ?>cm</span>
+            </div>
+            <div class="style-item">
+                <span class="style-label">B</span>
+                <span class="style-value"><?= htmlspecialchars($girl['b']) ?></span>
+            </div>
+            <div class="style-item">
+                <span class="style-label">W</span>
+                <span class="style-value"><?= htmlspecialchars($girl['w']) ?></span>
+            </div>
+            <div class="style-item">
+                <span class="style-label">H</span>
+                <span class="style-value"><?= htmlspecialchars($girl['h']) ?></span>
+            </div>
+        </div>
     </div>
 
     <!-- タイムライン最新投稿 -->
     <div class="section timeline-section">
         <h3 class="section-title">タイムライン</h3>
         <div class="timeline-preview">
-            <p class="no-post">投稿はまだありません</p>
-            <!-- 後でタイムライン実装時に追加 -->
+            <?php if ($latestPost): ?>
+                <?php
+                $created = new DateTime($latestPost['created_at']);
+                ?>
+                <div class="timeline-post">
+                    <div class="post-time"><?= $created->format('Y/m/d H:i') ?></div>
+                    <div class="post-content"><?= nl2br(htmlspecialchars($latestPost['content'])) ?></div>
+                    <?php if (!empty($latestMedia)): ?>
+                        <div class="post-media">
+                            <?php 
+                            $firstMedia = $latestMedia[0];
+                            $isVideo = $firstMedia['media_type'] === 'video';
+                            ?>
+                            <?php if ($isVideo): ?>
+    <video src="../timeline/uploads/<?= htmlspecialchars($firstMedia['file_path']) ?>" controls></video>
+<?php else: ?>
+    <img src="../timeline/uploads/<?= htmlspecialchars($firstMedia['file_path']) ?>" alt="投稿画像">
+<?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <p class="no-post">投稿はまだありません</p>
+            <?php endif; ?>
         </div>
-        <a href="timeline.php?g_login_id=<?= htmlspecialchars($g_login_id) ?>" class="btn-more">もっと見る</a>
+        <a href="../timeline/timeline.php?filter=girl&g_login_id=<?= htmlspecialchars($g_login_id) ?>" class="btn-more">もっと見る</a>
     </div>
 
     <!-- コメント -->
@@ -275,6 +411,7 @@ function showSlide(n) {
     slides[slideIndex].classList.add('active');
     dots[slideIndex].classList.add('active');
 }
+
 function changeSlide(n) {
     clearInterval(slideTimer);
     slideIndex += n;
@@ -331,25 +468,21 @@ function toggleFavorite(gLoginId, button) {
 }
 </script>
 
-
 <script>
 // 現在のキャストIDをJavaScriptに渡す
 const currentGirlId = '<?= htmlspecialchars($g_login_id, ENT_QUOTES, 'UTF-8') ?>';
 
 // ページ読み込み時にフッターの予約リンクを更新
 document.addEventListener('DOMContentLoaded', function() {
-  // フッターの予約アイコンのリンクを更新
   const footerReserveLinks = document.querySelectorAll('footer a[href*="reserve.php"]');
   footerReserveLinks.forEach(function(link) {
     if (currentGirlId) {
-      // 既存のクエリパラメータがある場合は考慮
       const url = new URL(link.href, window.location.origin);
       url.searchParams.set('g_login_id', currentGirlId);
       link.href = url.toString();
     }
   });
   
-  // 「この子を予約する」ボタンも同様に設定（もしあれば）
   const reserveButtons = document.querySelectorAll('a.btn-reserve, .reserve-btn');
   reserveButtons.forEach(function(btn) {
     if (currentGirlId && btn.href.includes('reserve.php')) {

@@ -30,13 +30,15 @@ $baseDate = getBaseDate();
 // 基準日出勤の女の子
 $girls_today = girls_targetday($pdo, $baseDate);
 $names_today = array_column($girls_today,'name');
-
 // 女の子プルダウン作成
 $sg_array = [];
 foreach($k_checkgirls as $g){
+    // カスタマーサポートをスキップ
+    if($g['name'] === 'カスタマーサポート') continue;
+    
     $label = $g['name'];
     if(in_array($g['name'], $names_today)){
-        $label .= '（本日出勤）';
+        $label .= '(本日出勤)';
     }
     $sg_array[] = ['value'=>$g['name'], 'label'=>$label];
 }
@@ -1366,36 +1368,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+// 予約送信ボタンとフォーム送信処理
 function submitReservation() {
-    // 予約時間が過去でないかチェック
-    const reserveDate = dateSelect.value;
-    const reserveTime = timeSelect.value;
-    
-    if (!reserveDate || !reserveTime) {
-        alert('日付と時間を選択してください');
-        return;
-    }
-    
-    // 時間の結合と日跨ぎ処理
-    const [hour, minute] = reserveTime.split(':');
-    let checkDate = reserveDate;
-    
-    // 00:00～07:59は翌日扱い
-    if (parseInt(hour) >= 0 && parseInt(hour) < 8) {
-        const nextDay = new Date(reserveDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-        checkDate = nextDay.toISOString().split('T')[0];
-    }
-    
-    const reserveDatetime = new Date(checkDate + 'T' + reserveTime + ':00');
-    const now = new Date();
-    
-    if (reserveDatetime < now) {
-        alert('過去の時間は予約できません。別の時間を選択してください。');
-        return;
-    }
-    
-    // フォーム作成・送信
+    // フォーム作成・送信のみ(バリデーションはPHP側で行う)
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'process_reserve.php';

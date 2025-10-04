@@ -300,15 +300,5 @@ function checkFinalReservationConflict($pdo, $reserveData) {
 /**
  * 予約時間から基準日を計算（6時切り替え）
  */
-function get_BaseDateFromReservation($datetime) {
-    $dt = new DateTime($datetime);
-    $hour = (int)$dt->format('H');
-    
-    // 0時～5時59分は前日扱い
-    if ($hour < 6) {
-        $dt->modify('-1 day');
-    }
-    
-    return $dt->format('Y-m-d');
-}
+
 ?>

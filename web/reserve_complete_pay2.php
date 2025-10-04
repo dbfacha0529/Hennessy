@@ -63,6 +63,9 @@ $date_fmt = (new DateTime($date))->format('Y年n月j日（')
 $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
 ?>
 
+  <!--オリジナルCSS-->
+  <link href="./css/reserve_complete.css" rel="stylesheet">
+
 <div class="container">
     <div class="completion-header">
         <div class="success-icon">
@@ -134,7 +137,11 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
             <?php endif; ?>
         </table>
     </div>
-
+<!-- ボタンエリア -->
+    <div class="button-area">
+        <a href="reserve_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
+        <a href="home.php" class="btn btn-secondary btn-lg">ホームに戻る</a>
+    </div>
     <!-- 支払い金額テーブル -->
     <div class="payment-details">
         <h2>お支払い金額</h2>
@@ -168,11 +175,7 @@ $time_fmt = $in_time->format('H:i') . '～' . $out_time->format('H:i');
         </table>
     </div>
 
-    <!-- ボタンエリア -->
-    <div class="button-area">
-        <a href="reserve_list.php" class="btn btn-primary btn-lg">予約リストへ</a>
-        <a href="home.php" class="btn btn-secondary btn-lg">ホームに戻る</a>
-    </div>
+    
 </div>
 
 <?php include 'footer.php'; ?>

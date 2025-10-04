@@ -1,0 +1,477 @@
+/* ===============================
+   予約確認ページ - 全体刷新版
+   =============================== */
+
+/* ページ全体 */
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+  min-height: 100vh;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 56.25rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+/* ===============================
+   セクションタイトル
+   =============================== */
+.section-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003018;
+  margin-bottom: 0.625rem;
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* ===============================
+   テーブルカードスタイル
+   =============================== */
+.table-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 48, 24, 0.08);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 0.0625rem solid rgba(0, 117, 58, 0.1);
+}
+
+/* テーブル本体 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+/* ヘッダー */
+table thead {
+  background: linear-gradient(135deg, #003018 0%, #00503d 100%);
+}
+
+table thead th {
+  color: white;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+  letter-spacing: 0.03125rem;
+}
+
+/* テーブル行 */
+table tbody tr {
+  border-bottom: 0.0625rem solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+table tbody tr:hover {
+  background-color: #f8fdf9;
+  transform: scale(1.005);
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* セル */
+table tbody td {
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* 項目名（左列） */
+table tbody td:first-child {
+  font-weight: 600;
+  color: #00753a;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+  width: 30%;
+  position: relative;
+}
+
+table tbody td:first-child::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.1875rem;
+  height: 60%;
+  background: linear-gradient(180deg, #00753a 0%, #003018 100%);
+  border-radius: 0.125rem;
+}
+
+/* 内容（右列） */
+table tbody td:last-child {
+  color: #333;
+  font-size: 1.0625rem;
+}
+
+/* 合計行の特別スタイル */
+table tbody tr[style*="font-weight: bold"] {
+  background: linear-gradient(90deg, #e8f5e9 0%, #f1f8f4 100%);
+  border-top: 0.125rem solid #00753a;
+  border-bottom: 0.125rem solid #00753a;
+}
+
+table tbody tr[style*="font-weight: bold"] td {
+  font-size: 1.375rem;
+  font-weight: bold;
+  color: #003018;
+  padding: 1.5rem;
+}
+
+table tbody tr[style*="font-weight: bold"] td:first-child::after {
+  display: none;
+}
+
+/* マイナス金額 */
+table tbody td[style*="color: red"] {
+  color: #e53e3e !important;
+  font-weight: 600;
+  background: linear-gradient(90deg, #fff5f5 0%, #ffffff 100%);
+}
+
+/* ===============================
+   料金テーブル専用スタイル
+   =============================== */
+table:last-of-type tbody td:first-child {
+  background: linear-gradient(90deg, #fef3e7 0%, #ffffff 100%);
+  color: #d97706;
+}
+
+table:last-of-type tbody td:first-child::after {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* ===============================
+   フォーム・ボタン
+   =============================== */
+#reserveForm {
+  margin: 3rem 0 2rem;
+}
+
+.mb-3 {
+  margin-bottom: 1.875rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* SMS認証ボタン */
+.btn-primary {
+  background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+  color: white;
+  padding: 1.125rem 4.375rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 3.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 117, 58, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+  width: 18.75rem;
+  height: 18.75rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-0.1875rem);
+  box-shadow: 0 0.75rem 1.875rem rgba(0, 117, 58, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 117, 58, 0.3);
+}
+
+/* 戻るボタン */
+.btn-back {
+  display: inline-block;
+  background: white;
+  color: #00753a;
+  padding: 0.875rem 3.125rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  border: 0.125rem solid #00753a;
+  border-radius: 3.125rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.25rem;
+}
+
+.btn-back:hover {
+  background: #00753a;
+  color: white;
+  transform: translateY(-0.1875rem);
+  box-shadow: 0 0.5rem 1rem rgba(0, 117, 58, 0.2);
+}
+
+/* ===============================
+   レスポンシブ: タブレット (768px以下)
+   =============================== */
+@media (max-width: 48rem) {
+  .page-container {
+    padding: 1.875rem 1rem;
+  }
+
+  .section-header h1 {
+    font-size: 1.75rem;
+  }
+
+  table thead th {
+    font-size: 0.9375rem;
+    padding: 1rem 1.25rem;
+  }
+
+  table tbody td {
+    padding: 1rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  table tbody td:first-child {
+    width: 35%;
+  }
+
+  table tbody tr[style*="font-weight: bold"] td {
+    font-size: 1.1875rem;
+    padding: 1.25rem;
+  }
+
+  .btn-primary {
+    padding: 1rem 3.125rem;
+    font-size: 1.125rem;
+  }
+
+  .btn-back {
+    padding: 0.8125rem 2.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* ===============================
+   レスポンシブ: スマホ (480px以下)
+   =============================== */
+@media (max-width: 30rem) {
+  body {
+    background: #f5f7fa;
+  }
+
+  .page-container {
+    padding: 1.25rem 0.625rem;
+  }
+
+  .section-header {
+    margin-bottom: 1.875rem;
+  }
+
+  .section-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .section-header p {
+    font-size: 0.875rem;
+  }
+
+  /* テーブルカード */
+  .table-card {
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.25rem 1rem rgba(0, 48, 24, 0.06);
+  }
+
+  /* ヘッダー非表示 */
+  table thead {
+    display: none;
+  }
+
+  /* 行をカード風に */
+  table tbody tr {
+    display: block;
+    background: white;
+    margin-bottom: 0.75rem;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+  }
+
+  table tbody tr:hover {
+    transform: none;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  }
+
+  /* セルを縦積み */
+  table tbody td {
+    display: block;
+    width: 100% !important;
+    padding: 0;
+    border: none;
+  }
+
+  /* 項目名 */
+  table tbody td:first-child {
+    background: linear-gradient(135deg, #003018 0%, #00503d 100%);
+    color: white;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    letter-spacing: 0.03125rem;
+  }
+
+  table tbody td:first-child::after {
+    display: none;
+  }
+
+  /* 内容 */
+  table tbody td:last-child {
+    padding: 1rem;
+    font-size: 1rem;
+    color: #333;
+    background: white;
+  }
+
+  /* 合計行 */
+  table tbody tr[style*="font-weight: bold"] {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border: 0.125rem solid #00753a;
+    margin-top: 1rem;
+  }
+
+  table tbody tr[style*="font-weight: bold"] td:first-child {
+    background: linear-gradient(135deg, #00753a 0%, #003018 100%);
+    font-size: 0.9375rem;
+    padding: 0.875rem 1rem;
+  }
+
+  table tbody tr[style*="font-weight: bold"] td:last-child {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #003018;
+    padding: 1.25rem;
+  }
+
+  /* マイナス金額 */
+  table tbody td[style*="color: red"] {
+    background: #fff5f5;
+    color: #e53e3e !important;
+  }
+
+  /* 料金テーブル */
+  table:last-of-type tbody td:first-child {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+  }
+
+  /* ボタン */
+  .btn-primary {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-size: 1.0625rem;
+    border-radius: 0.75rem;
+  }
+
+  .btn-back {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
+    border-radius: 0.75rem;
+  }
+
+  #reserveForm {
+    margin: 2rem 0 1.5rem;
+  }
+}
+
+/* ===============================
+   料金変動注意書き
+   =============================== */
+.price-notice {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border-left: 0.25rem solid #f59e0b;
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(245, 158, 11, 0.15);
+}
+
+.price-notice i {
+  font-size: 1.5rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.price-notice p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* タブレット対応 */
+@media (max-width: 48rem) {
+  .price-notice {
+    padding: 1rem 1.25rem;
+    gap: 0.875rem;
+  }
+
+  .price-notice i {
+    font-size: 1.375rem;
+  }
+
+  .price-notice p {
+    font-size: 0.875rem;
+  }
+}
+
+/* スマホ対応 */
+@media (max-width: 30rem) {
+  .price-notice {
+    padding: 1rem;
+    gap: 0.75rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .price-notice i {
+    font-size: 1.25rem;
+  }
+
+  .price-notice p {
+    font-size: 0.8125rem;
+  }
+}
