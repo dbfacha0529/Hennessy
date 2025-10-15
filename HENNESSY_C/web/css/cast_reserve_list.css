@@ -1,0 +1,484 @@
+/* ========== 基本設定 ========== */
+.reserve-list-container {
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: 1.25rem;
+    padding-bottom: 11vh;
+}
+
+.reserve-list-container h1 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* ========== 月選択 ========== */
+.month-selector {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.month-selector form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.month-selector label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9375rem;
+}
+
+.month-selector select {
+    padding: 0.5rem 1rem;
+    border: 0.125rem solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.month-selector select:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 0.1875rem rgba(255, 105, 180, 0.1);
+}
+
+/* 日付選択無効化時のスタイル */
+.month-selector select:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ========== 検索バー ========== */
+.search-bar {
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    border: 0.0625rem solid #ddd;
+    border-radius: 1.5rem;
+    font-size: 0.9375rem;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23999" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 0.75rem center;
+    background-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 0.1875rem rgba(255, 105, 180, 0.1);
+}
+
+/* オートコンプリートリスト */
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 0.0625rem solid #ddd;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    max-height: 15rem;
+    overflow-y: auto;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    margin-top: 0.5rem;
+}
+
+.autocomplete-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 0.0625rem solid #f0f0f0;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+    background-color: #f8f8f8;
+}
+
+.autocomplete-item strong {
+    color: #ff69b4;
+    font-weight: 600;
+}
+
+.autocomplete-item.no-result {
+    color: #999;
+    cursor: default;
+    text-align: center;
+}
+
+.autocomplete-item.no-result:hover {
+    background-color: #fff;
+}
+
+/* 検索情報表示 */
+.search-info {
+    background-color: #fff3f8;
+    padding: 0.75rem 1rem;
+    margin: 0 0 1rem 0;
+    border-radius: 0.5rem;
+    color: #c2185b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-left: 0.25rem solid #ff69b4;
+}
+
+/* インライン×ボタン（検索情報バー内） */
+.clear-button-inline {
+    background: none;
+    border: none;
+    color: #c2185b;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+}
+
+.clear-button-inline:hover {
+    color: #ff3b30;
+    transform: scale(1.1);
+}
+
+.clear-button-inline:active {
+    transform: scale(0.95);
+}
+
+/* ========== 空状態 ========== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* ========== 予約リスト ========== */
+.reserve-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reserve-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.reserve-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    border-left: 0.25rem solid #ff69b4;
+}
+
+.reserve-card:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-0.125rem);
+}
+
+/* ========== カードヘッダー ========== */
+.reserve-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 0.0625rem solid #f0f0f0;
+}
+
+.reserve-date .date-main {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.reserve-status {
+    flex-shrink: 0;
+}
+
+.reserve-status span {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.9375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-checking {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ========== カードボディ ========== */
+.reserve-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.reserve-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+    flex-shrink: 0;
+    min-width: 8rem;
+}
+
+.info-value {
+    font-size: 0.9375rem;
+    color: #333;
+    text-align: right;
+    flex: 1;
+}
+
+.hotel-room {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background: #e9ecef;
+    border-radius: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+.reserve-cost {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 0.0625rem solid #f0f0f0;
+}
+
+.cost-value {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #ff69b4;
+}
+
+/* ========== レスポンシブ対応 ========== */
+
+/* タブレット (768px以下) */
+@media (max-width: 48rem) {
+    .reserve-list-container {
+        padding: 1rem;
+    }
+
+    .reserve-list-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .reserve-card {
+        padding: 1rem;
+    }
+
+    .reserve-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .info-label {
+        min-width: 6rem;
+        font-size: 0.8125rem;
+    }
+
+    .info-value {
+        font-size: 0.875rem;
+    }
+}
+
+/* スマホ (480px以下) */
+@media (max-width: 30rem) {
+    .reserve-list-container {
+        padding: 0.75rem;
+    }
+
+    .reserve-list-container h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* 月選択 */
+    .month-selector {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .month-selector form {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .month-selector label {
+        font-size: 1rem;
+    }
+
+    .month-selector select {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    /* 検索バー - スマホで大きく */
+    .search-bar {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+    }
+    
+    .search-input {
+        font-size: 1rem;
+        padding: 0.875rem 3rem 0.875rem 2.75rem;
+        background-size: 1.125rem;
+        background-position: 0.875rem center;
+    }
+    
+    /* オートコンプリート - スマホで大きく */
+    .autocomplete-list {
+        max-height: 16rem;
+        font-size: 1rem;
+    }
+    
+    .autocomplete-item {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+    }
+    
+    /* 検索情報 */
+    .search-info {
+        margin: 0 0 0.875rem 0;
+        font-size: 0.9375rem;
+        padding: 0.875rem 1rem;
+    }
+    
+    .clear-button-inline {
+        font-size: 1.75rem;
+    }
+
+    /* 予約カード */
+    .reserve-card {
+        padding: 1rem;
+    }
+
+    .reserve-date .date-main {
+        font-size: 1.0625rem;
+    }
+
+    .reserve-status span {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.8125rem;
+    }
+
+    .reserve-info-row {
+        flex-direction: column;
+        gap: 0.375rem;
+        padding: 0.5rem 0;
+    }
+
+    .info-label {
+        min-width: auto;
+        font-size: 0.9375rem;
+    }
+
+    .info-value {
+        text-align: left;
+        font-size: 1rem;
+    }
+
+    .cost-value {
+        font-size: 1.25rem;
+    }
+
+    .hotel-room {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .empty-state {
+        padding: 2.5rem 1rem;
+    }
+
+    .empty-icon {
+        font-size: 3.5rem;
+    }
+
+    .empty-state p {
+        font-size: 1rem;
+    }
+}

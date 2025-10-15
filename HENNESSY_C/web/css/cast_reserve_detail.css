@@ -1,0 +1,306 @@
+/* ========== 基本設定 ========== */
+.reserve-detail-container {
+    max-width: 50rem;
+    margin: 0 auto;
+    padding: 1.25rem;
+    padding-bottom: 11vh;
+}
+
+/* ========== ヘッダー ========== */
+.detail-header {
+    margin-bottom: 1.5rem;
+}
+
+.detail-header h1 {
+    margin-top: 1rem;
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.btn-back {
+    display: block;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    padding: 0.625rem 1.25rem;
+    background: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+    margin-bottom: 1rem;
+}
+
+.btn-back:hover {
+    background: #e9ecef;
+    transform: translateX(-0.25rem);
+}
+
+/* ========== 詳細カード ========== */
+.detail-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* ========== セクション ========== */
+.detail-section {
+    padding: 1.5rem;
+    border-bottom: 0.0625rem solid #f0f0f0;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ========== ステータスセクション ========== */
+.status-section {
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 1.875rem;
+    font-size: 1.125rem;
+    font-weight: bold;
+}
+
+.status-badge.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.status-completed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.status-checking {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ========== 詳細グリッド ========== */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.item-label {
+    font-size: 0.8125rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.item-value {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* ========== オプションリスト ========== */
+.options-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.option-tag {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #e4f7ff;
+    color: #002a59;
+    border-radius: 0.9375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ========== 料金内訳 ========== */
+.cost-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.cost-label {
+    font-size: 0.9375rem;
+    color: #555;
+}
+
+.cost-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.cost-value.discount {
+    color: #dc3545;
+}
+
+.cost-item.total {
+    background: linear-gradient(135deg, #fff5f7 0%, #ffe4e9 100%);
+    border: 0.125rem solid #ff69b4;
+    margin-top: 0.5rem;
+}
+
+.cost-item.total .cost-label {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.cost-item.total .cost-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff69b4;
+}
+
+/* ========== コメントボックス ========== */
+.comment-box {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 0.25rem solid #ff69b4;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* ========== レスポンシブ対応 ========== */
+
+/* タブレット (768px以下) */
+@media (max-width: 48rem) {
+    .reserve-detail-container {
+        padding: 1rem;
+    }
+
+    .detail-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .detail-section {
+        padding: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .status-badge {
+        padding: 0.625rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* スマホ (480px以下) */
+@media (max-width: 30rem) {
+    .reserve-detail-container {
+        padding: 0.75rem;
+    }
+
+    .detail-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .btn-back {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .detail-section {
+        padding: 1rem;
+    }
+
+    .section-title {
+        font-size: 0.9375rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+
+    .item-label {
+        font-size: 0.75rem;
+    }
+
+    .item-value {
+        font-size: 0.875rem;
+    }
+
+    .option-tag {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    .cost-item {
+        padding: 0.625rem;
+    }
+
+    .cost-label {
+        font-size: 0.875rem;
+    }
+
+    .cost-value {
+        font-size: 0.9375rem;
+    }
+
+    .cost-item.total .cost-label {
+        font-size: 1rem;
+    }
+
+    .cost-item.total .cost-value {
+        font-size: 1.25rem;
+    }
+
+    .comment-box {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}
